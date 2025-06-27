@@ -6,9 +6,9 @@
     <title>Amazon Q Developer CLI 勉強会</title>
     <style>
         body {
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            background-color: #f0f8ff; /* AliceBlue */
-            color: #333;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #e0f7fa; /* Light Cyan */
+            color: #263238; /* Dark Grey Blue */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -48,30 +48,31 @@
         }
 
         .slide h1 {
-            font-size: 3.5em;
+            font-size: 3.8em;
             color: #007bff; /* Bright Blue */
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             background-color: rgba(255, 255, 255, 0.8);
-            padding: 20px;
-            border-radius: 10px;
+            padding: 25px;
+            border-radius: 12px;
             z-index: 2;
         }
 
         .slide h2 {
-            font-size: 2.8em;
-            color: #28a745; /* Green */
-            margin-bottom: 30px;
+            font-size: 3em;
+            color: #00796b; /* Teal */
+            margin-bottom: 35px;
         }
 
         .slide p {
-            font-size: 1.6em;
-            line-height: 1.8;
-            max-width: 80%;
+            font-size: 1.7em;
+            line-height: 1.9;
+            max-width: 85%;
+            color: #455a64; /* Blue Grey */
         }
 
         .slide a {
             font-size: 1.4em;
-            color: #17a2b8; /* Info Teal */
+            color: #00796b; /* Teal */
             text-decoration: none;
             margin-top: 20px;
         }
@@ -90,9 +91,24 @@
             background-color: rgba(0, 0, 0, 0.5); /* 背景色を半透明の黒に */
         }
 
+        .slide .community-name {
+            font-size: 1.8em;
+            color: white; /* White */
+            margin-top: -15px;
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 10px 20px;
+            border-radius: 8px;
+        }
+
+        .community-name .date {
+            margin-right: 15px;
+            font-size: 0.8em;
+            opacity: 0.8;
+        }
+
         .goal {
             font-size: 2.5em !important;
-            color: #dc3545; /* Red */
+            color: #d84315; /* Deep Orange */
             font-weight: bold;
             margin-top: 40px;
         }
@@ -107,7 +123,7 @@
         }
 
         .arrow {
-            background-color: #007bff;
+            background-color: #00796b; /* Teal */
             color: white;
             border: none;
             padding: 15px 25px;
@@ -118,12 +134,34 @@
         }
 
         .arrow:hover {
-            background-color: #0056b3;
+            background-color: #004d40; /* Darker Teal */
         }
 
         .arrow:disabled {
             background-color: #cccccc;
             cursor: not-allowed;
+        }
+
+        .character-image {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 150px;
+            height: auto;
+            z-index: 10;
+        }
+
+        .tshirt-image {
+            width: 400px;
+            height: auto;
+            margin-top: 20px;
+        }
+
+        .tshirt-text {
+            font-size: 3em;
+            color: #d84315; /* Deep Orange */
+            font-weight: bold;
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -132,18 +170,27 @@
         <!-- Page 1: Hero Section -->
         <section id="hero-slide" class="slide active">
             <h1>Amazon Q Developer CLI<br>ハンズオン勉強会</h1>
+            <p class="community-name">HAGAKUREプログラミング塾　2025.06.29</p>
         </section>
 
         <!-- Page 2: Overview -->
         <section class="slide">
             <h2>🚀 勉強会の概要</h2>
-            <p>この勉強会では、Amazon Q Developer CLI を使って、簡単なゲーム開発とブログ記事作成を体験します。</br>最終ゴールは、AWS公式のTシャツプレゼントキャンペーンに応募することです！</br>楽しみながら最新のAI開発ツールを学びましょう。</p>
+            <p>今回は、Amazon Q Developer CLI を使って、</br>簡単なゲーム開発とブログ記事作成を体験します。</br>今日のゴール：AWS公式のTシャツプレゼントキャンペーンに応募する！</br>楽しみながら最新のAI開発ツールを学びましょう。</p>
         </section>
 
         <!-- Page 3: Environment Check -->
         <section class="slide">
             <h2>環境確認</h2>
-            <p>オンラインでご参加の方、画面はクリアに見えていますか？</br>音声ははっきりと聞こえていますか？</br>もし問題があれば、チャットでお知らせください。</p>
+            <p>画面共有は見えていますか？</br>音声ははっきりと聞こえていますか？</br>チャットはSlackの方でお願いします。</p>
+        </section>
+
+        <!-- Special Thanks -->
+        <section class="slide">
+            <h2>Special Thanks</h2>
+            <p>佐賀県産業スマート化センターさまのコミュニティ支援にて、ZOOMの有料プランを提供いただき、利用させていただいております。<br>
+                <a href="https://www.saga-smart.jp/" target="_blank">https://www.saga-smart.jp/</a>
+            </p>
         </section>
 
         <!-- Page 4: What is Amazon Q? -->
@@ -158,17 +205,22 @@
             <p>Amazon Q CLI を使ってゲームを作り、</br>その体験をブログに書いて...</p>
             <p class="goal">限定Tシャツをゲットしよう！</p>
         </section>
-
+        <!-- Page 9: T-shirt Get! -->
+        <section class="slide">
+            <h2>Tシャツゲットだぜ！</h2>
+            <img src="images/tshirt.jpg" alt="T-shirt" class="tshirt-image">
+        </section>
         <!-- Page 6: Hands-on Part 1 -->
         <section class="slide">
-            <h2>ハンズオン①</br>ゲーム開発</h2>
-            <p>まずは肩慣らしに、簡単なゲームを</br>AIに作ってもらいましょう。</p>
+            <h2>ハンズオン①</br>ゲーム開発　22時20分まで</h2>
+            <p>自然言語で命令して、ゲーム開発を行います。</br></p>
+            <p></br></p>
         </section>
 
         <!-- Page 7: Hands-on Part 2 -->
         <section class="slide">
-            <h2>ハンズオン②</br>ブログ記事作成</h2>
-            <p>開発体験をブログにまとめます。</br>指定のブログサイトを利用してください。</p>
+            <h2>ハンズオン②</br>ブログ記事作成　22時50分まで</h2>
+            <p>開発体験をブログにまとめます。</br>ぜひ、Scrollを利用してみてください。</p>
             <a href="https://hagakurepgm.net/blog/" target="_blank">https://hagakurepgm.net/blog/</a>
         </section>
         
@@ -179,9 +231,15 @@
             <a href="https://dev.classmethod.jp/articles/q-developer-cli-game-cbs/" target="_blank">参考記事はこちら</a>
         </section>
 
-        <!-- Page 9: Q&A -->
+        <!-- Page 9: T-shirt Get! -->
         <section class="slide">
-            <h2>Q & A</h2>
+            <h2>Tシャツゲットだぜ！</h2>
+            <img src="images/tshirt.jpg" alt="T-shirt" class="tshirt-image">
+        </section>
+
+        <!-- Page 10: Q&A -->
+        <section class="slide">
+            <h2>❓ Q & A</h2>
             <p>ご質問のある方は、お気軽にどうぞ！</p>
         </section>
     </div>
@@ -197,6 +255,25 @@
             const prevButton = document.getElementById('prev');
             const nextButton = document.getElementById('next');
             let currentSlide = 0;
+
+            const characterImages = [
+                'images/machi-musume.png',
+                'images/voice-ninja1.png',
+                'images/voice-ninja2.png',
+                'images/voice-samurai.png'
+            ];
+
+            const shuffledImages = characterImages.sort(() => 0.5 - Math.random());
+
+            // Place an image on every slide except the first one, cycling through images
+            slides.forEach((slide, i) => {
+                if (i > 0) { // Skip the hero slide
+                    const img = document.createElement('img');
+                    img.src = shuffledImages[(i - 1) % shuffledImages.length];
+                    img.classList.add('character-image');
+                    slide.appendChild(img);
+                }
+            });
 
             function showSlide(index) {
                 slides.forEach((slide, i) => {
