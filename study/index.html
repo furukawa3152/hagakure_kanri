@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amazon Q Developer CLI 勉強会</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f0f8ff; /* AliceBlue */
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .slider-container {
+            width: 100%;
+            height: 750px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 100%;
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            transition: left 0.5s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 40px;
+            box-sizing: border-box;
+        }
+
+        .slide.active {
+            left: 0;
+        }
+
+        .slide h1 {
+            font-size: 3.5em;
+            color: #007bff; /* Bright Blue */
+            margin-bottom: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 2;
+        }
+
+        .slide h2 {
+            font-size: 2.8em;
+            color: #28a745; /* Green */
+            margin-bottom: 30px;
+        }
+
+        .slide p {
+            font-size: 1.6em;
+            line-height: 1.8;
+            max-width: 80%;
+        }
+
+        .slide a {
+            font-size: 1.4em;
+            color: #17a2b8; /* Info Teal */
+            text-decoration: none;
+            margin-top: 20px;
+        }
+
+        .slide a:hover {
+            text-decoration: underline;
+        }
+
+        #hero-slide {
+            background: url('images/hero.png') no-repeat center center/cover;
+            color: white;
+        }
+
+        #hero-slide h1 {
+            color: white; /* ヒーローセクションのタイトル色を白に */
+            background-color: rgba(0, 0, 0, 0.5); /* 背景色を半透明の黒に */
+        }
+
+        .goal {
+            font-size: 2.5em !important;
+            color: #dc3545; /* Red */
+            font-weight: bold;
+            margin-top: 40px;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+        }
+
+        .arrow {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            font-size: 2em;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .arrow:hover {
+            background-color: #0056b3;
+        }
+
+        .arrow:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="slider-container">
+        <!-- Page 1: Hero Section -->
+        <section id="hero-slide" class="slide active">
+            <h1>Amazon Q Developer CLI<br>ハンズオン勉強会</h1>
+        </section>
+
+        <!-- Page 2: Overview -->
+        <section class="slide">
+            <h2>🚀 勉強会の概要</h2>
+            <p>この勉強会では、Amazon Q Developer CLI を使って、簡単なゲーム開発とブログ記事作成を体験します。</br>最終ゴールは、AWS公式のTシャツプレゼントキャンペーンに応募することです！</br>楽しみながら最新のAI開発ツールを学びましょう。</p>
+        </section>
+
+        <!-- Page 3: Environment Check -->
+        <section class="slide">
+            <h2>環境確認</h2>
+            <p>オンラインでご参加の方、画面はクリアに見えていますか？</br>音声ははっきりと聞こえていますか？</br>もし問題があれば、チャットでお知らせください。</p>
+        </section>
+
+        <!-- Page 4: What is Amazon Q? -->
+        <section class="slide">
+            <h2>そもそも...Amazon Q Developerとは？</h2>
+            <p>自然言語（日本語や英語）で指示するだけで、</br>AWSの操作やプログラミングをサポートしてくれる</br>AIアシスタントです。</br>ターミナル（黒い画面）上で使えます。</p>
+        </section>
+        
+        <!-- Page 5: Today's Goal -->
+        <section class="slide">
+            <h2>今日のゴール</h2>
+            <p>Amazon Q CLI を使ってゲームを作り、</br>その体験をブログに書いて...</p>
+            <p class="goal">限定Tシャツをゲットしよう！</p>
+        </section>
+
+        <!-- Page 6: Hands-on Part 1 -->
+        <section class="slide">
+            <h2>ハンズオン①</br>ゲーム開発</h2>
+            <p>まずは肩慣らしに、簡単なゲームを</br>AIに作ってもらいましょう。</p>
+        </section>
+
+        <!-- Page 7: Hands-on Part 2 -->
+        <section class="slide">
+            <h2>ハンズオン②</br>ブログ記事作成</h2>
+            <p>開発体験をブログにまとめます。</br>指定のブログサイトを利用してください。</p>
+            <a href="https://hagakurepgm.net/blog/" target="_blank">https://hagakurepgm.net/blog/</a>
+        </section>
+        
+        <!-- Page 8: How to Apply -->
+        <section class="slide">
+            <h2>キャンペーン応募</h2>
+            <p>作成したブログ記事のURLを</br>キャンペーンサイトから応募します。</br>詳しい手順は、参考URLをご確認ください。</p>
+            <a href="https://dev.classmethod.jp/articles/q-developer-cli-game-cbs/" target="_blank">参考記事はこちら</a>
+        </section>
+
+        <!-- Page 9: Q&A -->
+        <section class="slide">
+            <h2>Q & A</h2>
+            <p>ご質問のある方は、お気軽にどうぞ！</p>
+        </section>
+    </div>
+
+    <div class="navigation">
+        <button id="prev" class="arrow">&larr;</button>
+        <button id="next" class="arrow">&rarr;</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const slides = document.querySelectorAll('.slide');
+            const prevButton = document.getElementById('prev');
+            const nextButton = document.getElementById('next');
+            let currentSlide = 0;
+
+            function showSlide(index) {
+                slides.forEach((slide, i) => {
+                    slide.classList.remove('active');
+                    if (i === index) {
+                        slide.classList.add('active');
+                    }
+                });
+                updateNavButtons();
+            }
+
+            function updateNavButtons() {
+                prevButton.disabled = currentSlide === 0;
+                nextButton.disabled = currentSlide === slides.length - 1;
+            }
+
+            prevButton.addEventListener('click', () => {
+                if (currentSlide > 0) {
+                    currentSlide--;
+                    showSlide(currentSlide);
+                }
+            });
+
+            nextButton.addEventListener('click', () => {
+                if (currentSlide < slides.length - 1) {
+                    currentSlide++;
+                    showSlide(currentSlide);
+                }
+            });
+
+            showSlide(currentSlide);
+        });
+    </script>
+</body>
+</html>
