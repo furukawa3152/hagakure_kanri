@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python基礎講座 - HAGAKUREプログラミング塾</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #e0f7fa; /* Light Cyan */
+            color: #263238; /* Dark Grey Blue */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .slider-container {
+            width: 100%;
+            height: 850px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 100%;
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            transition: left 0.5s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 40px;
+            box-sizing: border-box;
+        }
+
+        .slide.active {
+            left: 0;
+        }
+
+        .slide h1 {
+            font-size: 3.8em;
+            color: #007bff; /* Bright Blue */
+            margin-bottom: 25px;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 25px;
+            border-radius: 12px;
+            z-index: 2;
+        }
+
+        .slide h2 {
+            font-size: 3em;
+            color: #00796b; /* Teal */
+            margin-bottom: 35px;
+        }
+
+        .slide p {
+            font-size: 1.7em;
+            line-height: 1.9;
+            max-width: 85%;
+            color: #455a64; /* Blue Grey */
+        }
+
+        .slide a {
+            font-size: 1.4em;
+            color: #00796b; /* Teal */
+            text-decoration: none;
+            margin-top: 20px;
+        }
+
+        .slide a:hover {
+            text-decoration: underline;
+        }
+
+        #hero-slide {
+            background: url('images/hero-python.png') no-repeat center center/cover;
+            color: white;
+        }
+
+        #hero-slide h1 {
+            color: white; /* ヒーローセクションのタイトル色を白に */
+            background-color: rgba(0, 0, 0, 0.5); /* 背景色を半透明の黒に */
+        }
+
+        .slide .community-name {
+            font-size: 1.8em;
+            color: white; /* White */
+            margin-top: -15px;
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 10px 20px;
+            border-radius: 8px;
+        }
+
+        .community-name .date {
+            margin-right: 15px;
+            font-size: 0.8em;
+            opacity: 0.8;
+        }
+
+        .goal {
+            font-size: 2.5em !important;
+            color: #d84315; /* Deep Orange */
+            font-weight: bold;
+            margin-top: 40px;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+        }
+
+        .arrow {
+            background-color: #00796b; /* Teal */
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            font-size: 2em;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .arrow:hover {
+            background-color: #004d40; /* Darker Teal */
+        }
+
+        .arrow:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .character-image {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 150px;
+            height: auto;
+            z-index: 10;
+        }
+
+        .content-list {
+            text-align: left;
+            font-size: 1.5em;
+            line-height: 1.8;
+            max-width: 90%;
+        }
+
+        .content-list li {
+            margin-bottom: 15px;
+        }
+
+        .code-block {
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.2em;
+            text-align: left;
+            max-width: 90%;
+            margin: 20px 0;
+            overflow-x: auto;
+            white-space: pre;
+            line-height: 1.5;
+        }
+
+        .chapter-title {
+            font-size: 2.5em !important;
+            color: #d84315; /* Deep Orange */
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+
+        .chapter-subtitle {
+            font-size: 1.8em;
+            color: #00796b;
+            margin-bottom: 25px;
+        }
+    </style>
+</head>
+<body>
+    <div class="slider-container">
+        <!-- Page 1: Hero Section -->
+        <section id="hero-slide" class="slide active">
+            <h1>Python基礎講座<br>完全マスター</h1>
+            <p class="community-name">HAGAKUREプログラミング塾　2025.07.27</p>
+        </section>
+
+        <!-- Page 2: Overview -->
+        <section class="slide">
+            <h2>🐍 講座の概要</h2>
+            <p>最近本当に手でコード書いてないので、Pythonを忘れてしまわないように、<br>復習カリキュラムをAIに作ってもらいました。</p>
+            <p>Pythonの基礎から実践まで、6つの章に分けて<br>体系的に学習します。<br><br>手書きワークを交えながら、<br>実際にコードを書いて理解を深めていきましょう。</p>
+        </section>
+
+        <!-- Page 3: Environment Check -->
+        <section class="slide">
+            <h2>環境確認</h2>
+            <p>画面共有は見えていますか？<br>音声ははっきりと聞こえていますか？<br>チャットはSlackの方でお願いします。</p>
+        </section>
+
+        <!-- Special Thanks -->
+        <section class="slide">
+            <h2>Special Thanks</h2>
+            <p>佐賀県産業スマート化センターさまのコミュニティ支援にて、<br>ZOOMの有料プランを提供いただき、利用させていただいております。<br>
+                <a href="https://www.saga-smart.jp/" target="_blank">https://www.saga-smart.jp/</a>
+            </p>
+        </section>
+
+        <!-- Today's Goal -->
+        <section class="slide">
+            <h2>今日のゴール</h2>
+            <p>Pythonの基礎をしっかりと身につけて、<br>実際にAIと対話するプログラムを作成する</p>
+            <p class="goal">Python マスターへの第一歩！</p>
+        </section>
+
+        <!-- Chapter 1 -->
+        <section class="slide">
+            <h2 class="chapter-title">第1章：文法の復習</h2>
+            <p class="chapter-subtitle">ウォームアップ編</p>
+            <ul class="content-list">
+                <li>コメント、変数、データ型（str, int, float, list, dict）</li>
+                <li>print()やinput()の確認</li>
+                <li>インデントとブロック（Pythonらしい構文）</li>
+            </ul>
+            <p style="font-size: 1.4em; color: #d84315; margin-top: 30px;">
+                <strong>手書きワーク：</strong><br>
+                名前と年齢を変数にして、print()で紹介文を出力<br>
+                辞書を使って「プロフィールカード」を手書き作成
+            </p>
+        </section>
+
+        <!-- Chapter 1 Code Example -->
+        <section class="slide">
+            <h2>第1章：サンプルコード</h2>
+            <pre class="code-block"># 名前と年齢を変数に代入
+name = "山田太郎"
+age = 25
+
+# 紹介文を出力
+print(f"こんにちは！私の名前は{name}です。")
+print(f"年齢は{age}歳です。")
+
+# 辞書を使ったプロフィールカード
+profile = {
+    "名前": "山田太郎",
+    "年齢": 25,
+    "趣味": ["読書", "プログラミング", "旅行"],
+    "好きな言語": "Python"
+}
+
+# プロフィールカードの表示
+print("===== プロフィールカード =====")
+for key, value in profile.items():
+    print(f"{key}: {value}")
+</pre>
+        </section>
+
+        <!-- Chapter 2 -->
+        <section class="slide">
+            <h2 class="chapter-title">第2章：制御構文</h2>
+            <p class="chapter-subtitle">if, for, while と演算</p>
+            <ul class="content-list">
+                <li>if / elif / else</li>
+                <li>forループ（リスト・range）</li>
+                <li>whileループとbreak, continue</li>
+                <li>in演算子、比較・論理演算子</li>
+            </ul>
+            <p style="font-size: 1.4em; color: #d84315; margin-top: 30px;">
+                <strong>手書きワーク：</strong><br>
+                FizzBuzz（まず手で書く → 口頭で「何が出るか」確認）<br>
+                簡単なメニュー表示と選択（条件分岐で処理）
+            </p>
+        </section>
+
+        <!-- Chapter 2 Code Example -->
+        <section class="slide">
+            <h2>第2章：サンプルコード</h2>
+            <pre class="code-block"># FizzBuzzの実装
+for i in range(1, 16):  # 1から15まで
+    if i % 3 == 0 and i % 5 == 0:
+        print("FizzBuzz")
+    elif i % 3 == 0:
+        print("Fizz")
+    elif i % 5 == 0:
+        print("Buzz")
+    else:
+        print(i)
+
+# 簡単なメニュー表示と選択
+print("\n===== メニュー =====")
+print("1: 情報を表示")
+print("2: 設定を変更")
+print("3: 終了")
+
+choice = input("選択してください（1-3）: ")
+
+if choice == "1":
+    print("情報を表示します...")
+elif choice == "2":
+    print("設定を変更します...")
+elif choice == "3":
+    print("プログラムを終了します...")
+else:
+    print("無効な選択です。1-3の数字を入力してください。")
+</pre>
+        </section>
+
+        <!-- Chapter 3 -->
+        <section class="slide">
+            <h2 class="chapter-title">第3章：関数・スコープ</h2>
+            <p class="chapter-subtitle">エラー処理</p>
+            <ul class="content-list">
+                <li>def、引数と戻り値</li>
+                <li>変数スコープの基本（ローカル・グローバル）</li>
+                <li>try / exceptでの例外処理</li>
+            </ul>
+            <p style="font-size: 1.4em; color: #d84315; margin-top: 30px;">
+                <strong>手書きワーク：</strong><br>
+                BMIを計算する関数（身長と体重を引数に）<br>
+                「整数かどうか判定する関数」＋ try-except
+            </p>
+        </section>
+
+        <!-- Chapter 3 Code Example -->
+        <section class="slide">
+            <h2>第3章：サンプルコード</h2>
+            <pre class="code-block"># BMIを計算する関数
+def calculate_bmi(height_cm, weight_kg):
+    """
+    BMIを計算する関数
+    height_cm: 身長（cm）
+    weight_kg: 体重（kg）
+    """
+    # cmをmに変換
+    height_m = height_cm / 100
+    # BMI = 体重(kg) / 身長(m)の2乗
+    bmi = weight_kg / (height_m ** 2)
+    return round(bmi, 1)  # 小数点第1位まで
+
+# 関数を使ってBMIを計算
+height = 170  # cm
+weight = 65   # kg
+bmi = calculate_bmi(height, weight)
+print(f"身長{height}cm、体重{weight}kgの場合、BMIは{bmi}です")
+
+# 整数かどうか判定する関数 + try-except
+def is_integer(input_str):
+    """
+    文字列が整数に変換可能かどうかを判定する関数
+    """
+    try:
+        int(input_str)
+        return True
+    except ValueError:
+        return False
+
+# 関数のテスト
+test_values = ["42", "3.14", "abc", "-7"]
+for value in test_values:
+    if is_integer(value):
+        print(f"'{value}'は整数です")
+    else:
+        print(f"'{value}'は整数ではありません")
+</pre>
+        </section>
+
+        <!-- Chapter 4 -->
+        <section class="slide">
+            <h2 class="chapter-title">第4章：リスト内包表記</h2>
+            <p class="chapter-subtitle">組み込み関数</p>
+            <ul class="content-list">
+                <li>リスト内包表記 [x for x in range(10) if x%2==0]</li>
+                <li>map() / filter() / lambda</li>
+                <li>enumerate() / zip() / sorted()</li>
+            </ul>
+            <p style="font-size: 1.4em; color: #d84315; margin-top: 30px;">
+                <strong>手書きワーク：</strong><br>
+                与えられた数リストを、2倍にしたリストに変換<br>
+                2つのリスト（名前と得点）をzipでペアに
+            </p>
+        </section>
+
+        <!-- Chapter 4 Code Example -->
+        <section class="slide">
+            <h2>第4章：サンプルコード</h2>
+            <pre class="code-block"># 与えられた数リストを2倍にする方法
+
+# 元のリスト
+numbers = [1, 2, 3, 4, 5]
+
+# 方法1: リスト内包表記
+doubled_numbers = [x * 2 for x in numbers]
+print("リスト内包表記:", doubled_numbers)
+
+# 方法2: map関数とlambda
+doubled_map = list(map(lambda x: x * 2, numbers))
+print("map関数:", doubled_map)
+
+# 2つのリスト（名前と得点）をzipでペアにする
+names = ["田中", "佐藤", "鈴木", "高橋", "伊藤"]
+scores = [85, 92, 78, 96, 88]
+
+# zip関数で2つのリストを結合
+student_scores = list(zip(names, scores))
+print("\n生徒の得点:")
+for name, score in student_scores:
+    print(f"{name}: {score}点")
+
+# enumerate関数を使って順位付け
+print("\n成績順:")
+for rank, (name, score) in enumerate(sorted(student_scores, 
+                                          key=lambda x: x[1], 
+                                          reverse=True), 1):
+    print(f"{rank}位: {name} ({score}点)")
+</pre>
+        </section>
+
+        <!-- Chapter 5 -->
+        <section class="slide">
+            <h2 class="chapter-title">第5章：クラス</h2>
+            <p class="chapter-subtitle">オブジェクト指向の基本</p>
+            <ul class="content-list">
+                <li>class定義と__init__、self</li>
+                <li>メソッド定義、インスタンス生成</li>
+                <li>属性の追加と変更</li>
+            </ul>
+            <p style="font-size: 1.4em; color: #d84315; margin-top: 30px;">
+                <strong>手書きワーク：</strong><br>
+                Bookクラスを定義し、タイトル・著者を持たせる<br>
+                introduce()メソッドで紹介文を出力
+            </p>
+        </section>
+
+        <!-- Chapter 5 Code Example -->
+        <section class="slide">
+            <h2>第5章：サンプルコード</h2>
+            <pre class="code-block"># Bookクラスの定義
+class Book:
+    # 初期化メソッド
+    def __init__(self, title, author, pages=0):
+        self.title = title      # タイトル
+        self.author = author    # 著者
+        self.pages = pages      # ページ数
+        self.is_open = False    # 本が開いているかどうか
+    
+    # 紹介メソッド
+    def introduce(self):
+        return f"『{self.title}』は{self.author}によって書かれた本です。全{self.pages}ページあります。"
+    
+    # 本を開くメソッド
+    def open_book(self):
+        self.is_open = True
+        return f"『{self.title}』を開きました。"
+    
+    # 本を閉じるメソッド
+    def close_book(self):
+        self.is_open = False
+        return f"『{self.title}』を閉じました。"
+
+# Bookクラスのインスタンスを作成
+python_book = Book("Python入門", "山田太郎", 300)
+novel = Book("桜の森", "佐藤花子", 250)
+
+# メソッドの呼び出し
+print(python_book.introduce())
+print(novel.introduce())
+
+# 本を開いて閉じる
+print(python_book.open_book())
+print(python_book.close_book())
+
+# 属性の変更
+python_book.title = "Python完全マスター"
+print(python_book.introduce())
+</pre>
+        </section>
+
+        <!-- Chapter 6 -->
+        <section class="slide">
+            <h2 class="chapter-title">第6章：OpenAI API</h2>
+            <p class="chapter-subtitle">ミニチャットボット体験</p>
+            <ul class="content-list">
+                <li>APIとは何か（ざっくりと）</li>
+                <li>HTTPのリクエスト／レスポンスの流れ</li>
+                <li>JSON形式の扱い</li>
+                <li>requests.post()の基本的な書き方</li>
+                <li>OpenAI Chat API（gpt-3.5-turbo）の呼び出し方</li>
+            </ul>
+        </section>
+
+        <!-- Code Example -->
+        <section class="slide">
+            <h2>OpenAI API サンプルコード</h2>
+            <pre class="code-block">import requests
+
+url = "https://api.openai.com/v1/chat/completions"
+api_key = "sk-..."  # 各自のAPIキーに置き換え
+
+headers = {
+    "Content-Type": "application/json",
+    "Authorization": f"Bearer {api_key}"
+}
+
+body = {
+    "model": "gpt-3.5-turbo",
+    "messages": [
+        {"role": "system", "content": "あなたは親切なアシスタントです"},
+        {"role": "user", "content": "こんにちは！"}
+    ]
+}
+
+response = requests.post(url, headers=headers, json=body)
+print(response.json()["choices"][0]["message"]["content"])
+</pre>
+        </section>
+
+        <!-- Q&A -->
+        <section class="slide">
+            <h2>❓ Q & A</h2>
+            <p>ご質問のある方は、お気軽にどうぞ！</p>
+        </section>
+    </div>
+
+    <div class="navigation">
+        <button id="prev" class="arrow">&larr;</button>
+        <button id="next" class="arrow">&rarr;</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const slides = document.querySelectorAll('.slide');
+            const prevButton = document.getElementById('prev');
+            const nextButton = document.getElementById('next');
+            let currentSlide = 0;
+
+            const characterImages = [
+                'images/machi-musume.png',
+                'images/voice-ninja1.png',
+                'images/voice-ninja2.png',
+                'images/voice-samurai.png'
+            ];
+
+            const shuffledImages = characterImages.sort(() => 0.5 - Math.random());
+
+            // Place an image on every slide except the first one, cycling through images
+            slides.forEach((slide, i) => {
+                if (i > 0) { // Skip the hero slide
+                    const img = document.createElement('img');
+                    img.src = shuffledImages[(i - 1) % shuffledImages.length];
+                    img.classList.add('character-image');
+                    slide.appendChild(img);
+                }
+            });
+
+            function showSlide(index) {
+                slides.forEach((slide, i) => {
+                    slide.classList.remove('active');
+                    if (i === index) {
+                        slide.classList.add('active');
+                    }
+                });
+                updateNavButtons();
+            }
+
+            function updateNavButtons() {
+                prevButton.disabled = currentSlide === 0;
+                nextButton.disabled = currentSlide === slides.length - 1;
+            }
+
+            prevButton.addEventListener('click', () => {
+                if (currentSlide > 0) {
+                    currentSlide--;
+                    showSlide(currentSlide);
+                }
+            });
+
+            nextButton.addEventListener('click', () => {
+                if (currentSlide < slides.length - 1) {
+                    currentSlide++;
+                    showSlide(currentSlide);
+                }
+            });
+
+            showSlide(currentSlide);
+        });
+    </script>
+</body>
+</html>

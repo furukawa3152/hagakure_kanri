@@ -1,0 +1,133 @@
+最近本当に手でコード書いてないので、Pythonを忘れてしまわないように、<br>復習カリキュラムをAIに作ってもらいました。
+Pythonの基礎から実践まで、6つの章に分けて<br>体系的に学習します。<br><br>手書きワークを交えながら、<br>実際にコードを書いて理解を深めていきましょう。
+
+◆ 第1章：文法の復習（ウォームアップ編）
+ねらい： 文法の記憶を呼び起こす
+内容：
+
+コメント、変数、データ型（str, int, float, list, dict）
+
+print()やinput()の確認
+
+インデントとブロック（Pythonらしい構文）
+
+手書きワーク例：
+
+名前と年齢を変数にして、print()で紹介文を出力
+
+辞書を使って「プロフィールカード」を手書き作成
+
+◆ 第2章：制御構文（if, for, while）と演算
+ねらい： 条件分岐とループを自在に書けるように
+内容：
+
+if / elif / else
+
+forループ（リスト・range）
+
+whileループとbreak, continue
+
+in演算子、比較・論理演算子
+
+手書きワーク例：
+
+FizzBuzz（まず手で書く → 口頭で「何が出るか」確認）
+
+簡単なメニュー表示と選択（条件分岐で処理）
+
+◆ 第3章：関数・スコープ・エラー処理
+ねらい： コードを部品化して、再利用できるように
+内容：
+
+def、引数と戻り値
+
+変数スコープの基本（ローカル・グローバル）
+
+try / exceptでの例外処理
+
+手書きワーク例：
+
+BMIを計算する関数（身長と体重を引数に）
+
+「整数かどうか判定する関数」＋ try-except
+
+◆ 第4章：リスト内包表記と組み込み関数
+ねらい： Pythonらしい書き方に触れる
+内容：
+
+リスト内包表記 [x for x in range(10) if x%2==0]
+
+map() / filter() / lambda
+
+enumerate() / zip() / sorted()
+
+手書きワーク例：
+
+与えられた数リストを、2倍にしたリストに変換
+
+2つのリスト（名前と得点）をzipでペアに
+
+◆ 第5章：クラスとオブジェクト指向の基本
+ねらい： PythonのOOPを軽く触れて理解する
+内容：
+
+class定義と__init__、self
+
+メソッド定義、インスタンス生成
+
+属性の追加と変更
+
+手書きワーク例：
+
+Bookクラスを定義し、タイトル・著者を持たせる
+
+introduce()メソッドで紹介文を出力
+
+◆ 第6回：OpenAI APIを叩いてみよう 〜ミニチャットボット体験〜
+ねらい：
+実務でも話題の「生成AI」をPythonで使ってみる体験を通じて、HTTPリクエスト・JSON・APIキーの概念も学ぶ。
+
+前提：
+
+OpenAIの無料または有料APIキー（事前に取得してもらう）
+
+Python標準 + requests モジュール（pip install requests）
+
+実行環境はローカル or Google Colabでも可
+
+学習項目：
+APIとは何か（ざっくりと）
+
+HTTPのリクエスト／レスポンスの流れ
+
+JSON形式の扱い
+
+requests.post()の基本的な書き方
+
+OpenAI Chat API（gpt-3.5-turbo）の呼び出し方
+
+事前に書いておくコードの雛形（紙に写してもらう）
+python
+コピーする
+編集する
+import requests
+
+url = "https://api.openai.com/v1/chat/completions"
+api_key = "sk-..."  # 各自のAPIキーに置き換え
+
+headers = {
+    "Content-Type": "application/json",
+    "Authorization": f"Bearer {api_key}"
+}
+
+body = {
+    "model": "gpt-4o-mini",
+    "messages": [
+        {"role": "system", "content": "あなたは親切なアシスタントです"},
+        {"role": "user", "content": "こんにちは！"}
+    ]
+}
+
+response = requests.post(url, headers=headers, json=body)
+
+print(response.json()["choices"][0]["message"]["content"])
