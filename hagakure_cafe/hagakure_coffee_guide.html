@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HAGAKURE CAFE - コーヒー豆案内</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Meiryo', sans-serif;
+            background: #fafafa;
+            min-height: 100vh;
+            padding: 40px 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: transparent;
+            padding: 60px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .background-logo {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 85%;
+            height: 85%;
+            opacity: 0.08;
+            background-image: url('tegaki_logo.jpeg');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: contain;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding-bottom: 30px;
+            border-bottom: 3px solid #333;
+        }
+
+        .cafe-title {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            color: #666;
+            font-style: italic;
+        }
+
+        .coffee-section {
+            margin-bottom: 40px;
+        }
+
+        .coffee-name {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+            padding: 15px 0;
+            border-bottom: 3px solid #333;
+        }
+
+        .coffee-description {
+            font-size: 1.1em;
+            color: #4A4A4A;
+            margin-bottom: 20px;
+            line-height: 1.8;
+            text-align: justify;
+        }
+
+        .feature-list {
+            margin: 25px 0;
+            padding: 20px 0;
+            border-top: 2px solid #ddd;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .feature-list h3 {
+            color: #333;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .feature-list ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .feature-list li {
+            padding: 8px 0;
+            color: #4A4A4A;
+            position: relative;
+            padding-left: 25px;
+        }
+
+        .feature-list li:before {
+            content: "☕";
+            position: absolute;
+            left: 0;
+            color: #333;
+        }
+
+        .lot-info {
+            margin: 30px 0;
+            padding: 20px 0;
+            border-top: 1px dashed #ccc;
+            border-bottom: 1px dashed #ccc;
+        }
+
+        .lot-info h4 {
+            color: #333;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .lot-info p {
+            color: #4A4A4A;
+            font-size: 1em;
+            line-height: 1.6;
+        }
+
+        .origin-info {
+            margin-top: 30px;
+            padding: 20px 0;
+            border-top: 2px solid #333;
+        }
+
+        .origin-info h4 {
+            color: #333;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .origin-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .origin-item {
+            display: inline-block;
+            padding: 8px 15px;
+            color: #333;
+            font-weight: bold;
+            margin: 5px;
+        }
+
+        /* 店舗情報セクション */
+        .store-info {
+            margin: 40px 0;
+            padding: 30px 0;
+            border-top: 3px solid #333;
+            border-bottom: 3px solid #333;
+        }
+
+        .store-info h3 {
+            color: #333;
+            font-size: 1.4em;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .store-details {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .store-text {
+            color: #4A4A4A;
+            line-height: 1.8;
+        }
+
+        .store-text p {
+            margin-bottom: 10px;
+        }
+
+        .qr-section {
+            text-align: center;
+        }
+
+        .qr-code {
+            width: 120px;
+            height: 120px;
+            background: #f8f8f8;
+            border: 2px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-size: 0.8em;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .qr-text {
+            font-size: 0.9em;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #ccc;
+            color: #333;
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 10px;
+            }
+
+            .container {
+                padding: 40px 20px;
+            }
+
+            .cafe-title {
+                font-size: 2em;
+            }
+
+            .coffee-name {
+                font-size: 1.5em;
+            }
+
+            .coffee-description {
+                font-size: 1em;
+            }
+
+            .store-details {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .qr-code {
+                width: 100px;
+                height: 100px;
+            }
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .container {
+                box-shadow: none;
+                border-radius: 0;
+            }
+
+            .background-logo {
+                opacity: 0.05;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="background-logo"></div>
+        
+        <div class="content">
+            <div class="header">
+                <div class="cafe-title">HAGAKURE CAFE</div>
+                <div class="subtitle">〜特別なコーヒー体験をお届けします〜</div>
+            </div>
+
+            <div class="coffee-section">
+                <div class="coffee-name">ジェノバブレンド "Lot Geisha"</div>
+                
+                <div class="coffee-description">
+                    ハニー珈琲の顔となるハウスブレンドの深煎りブレンド。深煎りならではの重厚感とクリーンで滑らかな質感があります。後口には華やかな風味も感じられるブレンドです。
+                </div>
+
+                <div class="feature-list">
+                    <h3>✨ 今回のロットの特徴</h3>
+                    <ul>
+                        <li>深煎りらしい重厚感があり、クリーンで滑らかな質感からエレガントさを感じます</li>
+                        <li>キャラメリゼしたような甘さと苦味の調和した味わいが特徴</li>
+                        <li>ジェノバブレンド ロット ゲイシャの特別な風味をお楽しみいただけます</li>
+                    </ul>
+                </div>
+
+                <div class="lot-info">
+                    <h4>🏆 ハニー珈琲のブレンドについて</h4>
+                    <p>
+                        ハニー珈琲のブレンドは、国際品評会（COE）入賞ロットや、Carbonic Maceration、Super Naturalなど希少なプロセスのロットなど、コーヒーの概念を覆す特別なロットを配合し、味の奥行や立体感を表現しています。
+                    </p>
+                    <p>
+                        また、定期的にブレンドの配合を見直し、常に新しい驚きをお届けしています。
+                    </p>
+                </div>
+
+                <div class="origin-info">
+                    <h4>🌍 生豆生産国</h4>
+                    <div class="origin-list">
+                        <div class="origin-item">エチオピア</div>
+                        <div class="origin-item">エルサルバドル</div>
+                        <div class="origin-item">その他</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="store-info">
+                <h3>🏪 ハニー珈琲 店舗情報</h3>
+                <div class="store-details">
+                    <div class="store-text">
+                        <p><strong>📍 住所:</strong> 〒123-4567 東京都渋谷区○○○○ 1-2-3</p>
+                        <p><strong>📞 電話:</strong> 03-1234-5678</p>
+                        <p><strong>🕒 営業時間:</strong> 平日 9:00-18:00 / 土日祝 10:00-17:00</p>
+                        <p><strong>🚇 アクセス:</strong> 渋谷駅から徒歩5分</p>
+                        <p><strong>☕ 提供:</strong> 特別なコーヒー豆の販売・試飲</p>
+                        <p><strong>🏆 実績:</strong> 国際品評会（COE）入賞ロット取扱</p>
+                    </div>
+                    <div class="qr-section">
+                        <div class="qr-code">
+                            QR<br>CODE
+                        </div>
+                        <div class="qr-text">ハニー珈琲HP</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer">
+                <p>HAGAKURE CAFE - 特別なコーヒー体験をお届けします</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

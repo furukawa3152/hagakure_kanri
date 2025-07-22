@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ハニー珈琲 - Los Pirineos 中煎り</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Meiryo', sans-serif;
+            background: #fafafa;
+            min-height: 100vh;
+            padding: 40px 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: transparent;
+            padding: 60px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .background-logo {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 85%;
+            height: 85%;
+            opacity: 0.08;
+            background-image: url('tegaki_logo.jpeg');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: contain;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding-bottom: 30px;
+            border-bottom: 3px solid #333;
+        }
+
+        .cafe-title {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            color: #666;
+            font-style: italic;
+        }
+
+        .coffee-section {
+            margin-bottom: 40px;
+        }
+
+        .coffee-name {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+            padding: 15px 0;
+            border-bottom: 3px solid #333;
+        }
+
+        .coffee-description {
+            font-size: 1.1em;
+            color: #4A4A4A;
+            margin-bottom: 20px;
+            line-height: 1.8;
+            text-align: justify;
+        }
+
+        .feature-list {
+            margin: 25px 0;
+            padding: 20px 0;
+            border-top: 2px solid #ddd;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .feature-list h3 {
+            color: #333;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .feature-list ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .feature-list li {
+            padding: 8px 0;
+            color: #4A4A4A;
+            position: relative;
+            padding-left: 25px;
+        }
+
+        .feature-list li:before {
+            content: "☕";
+            position: absolute;
+            left: 0;
+            color: #333;
+        }
+
+        .lot-info {
+            margin: 30px 0;
+            padding: 20px 0;
+            border-top: 1px dashed #ccc;
+            border-bottom: 1px dashed #ccc;
+        }
+
+        .lot-info h4 {
+            color: #333;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .lot-info p {
+            color: #4A4A4A;
+            font-size: 1em;
+            line-height: 1.6;
+        }
+
+        .origin-info {
+            margin-top: 30px;
+            padding: 20px 0;
+            border-top: 2px solid #333;
+        }
+
+        .origin-info h4 {
+            color: #333;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .origin-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .origin-item {
+            display: inline-block;
+            padding: 8px 15px;
+            color: #333;
+            font-weight: bold;
+            margin: 5px;
+        }
+
+        .award-info {
+            background: #f8f8f8;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+            border: 2px solid #333;
+        }
+
+        .award-info h4 {
+            color: #333;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+
+        .award-info p {
+            color: #4A4A4A;
+            font-size: 0.9em;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 2px solid #ddd;
+            color: #666;
+            font-size: 0.9em;
+            font-style: italic;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 20px;
+            }
+            
+            .container {
+                max-width: none;
+                padding: 20px;
+            }
+            
+            .background-logo {
+                opacity: 0.15;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            .cafe-title {
+                font-size: 2em;
+            }
+            
+            .coffee-name {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-logo"></div>
+    
+    <div class="container">
+        <div class="content">
+            <div class="header">
+                <h1 class="cafe-title">ハニー珈琲</h1>
+                <p class="subtitle">Honey Coffee</p>
+            </div>
+
+            <div class="coffee-section">
+                <h2 class="coffee-name">Los Pirineos 中煎り</h2>
+                
+                <div class="coffee-description">
+                    ジューシーな果実味＋リッチな甘さ＋複雑なフローラル＆チョコレート感をしっかり含んだ、上品かつ飲みごたえのあるスペシャルティコーヒー
+                </div>
+
+                <div class="feature-list">
+                    <h3>特徴</h3>
+                    <ul>
+                        <li>ジューシーな果実味とリッチな甘さ</li>
+                        <li>複雑なフローラル＆チョコレート感</li>
+                        <li>上品かつ飲みごたえのあるスペシャルティコーヒー</li>
+                    </ul>
+                </div>
+
+                <div class="origin-info">
+                    <h4>生産国</h4>
+                    <div class="origin-list">
+                        <span class="origin-item">エルサルバドル</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer">
+                <p>HAGAKURE CAFE - 特別なコーヒー体験をお届けします</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 
