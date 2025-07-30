@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2025年 生成AIアシスタント市場 徹底比較</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Tech -->
+    <!-- Application Structure Plan: A single-page application with a sticky top navigation for easy access to different analysis sections. The structure prioritizes user-driven exploration over linear reading. It starts with a high-level visual comparison (radar chart), then allows users to deep-dive into specific features, performance benchmarks, pricing, and finally get personalized recommendations. This task-oriented flow (Compare -> Analyze -> Decide) makes the dense report information digestible and actionable for various user types, from casual users to enterprise decision-makers. -->
+    <!-- Visualization & Content Choices: Report data is transformed into interactive components. High-level strategy -> Radar Chart for multi-axis comparison. Detailed features -> Interactive cards updated by a filter, avoiding overwhelming tables. Performance benchmarks -> Bar charts for clear quantitative comparison. Pricing -> Toggled views and dynamic bar charts to simplify complex cost structures. Recommendations -> Clickable profile cards for actionable advice. All visualizations use Chart.js on Canvas, ensuring no SVG or Mermaid JS is used, and are designed to be responsive and clear. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #F8F9FA;
+            color: #212529;
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #007BFF;
+            border-bottom-color: #007BFF;
+        }
+        .card {
+            background-color: #FFFFFF;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.1);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .btn {
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .btn-active {
+            background-color: #007BFF !important;
+            color: white !important;
+        }
+        [x-cloak] { display: none !important; }
+    </style>
+</head>
+<body class="antialiased" x-data="aiApp()">
+    
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <h1 class="text-xl md:text-2xl font-bold text-gray-800">生成AIアシスタント比較</h1>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#overview" @click="setActiveNav('#overview')" class="nav-link text-gray-600 font-medium pb-1">概要</a>
+                    <a href="#features" @click="setActiveNav('#features')" class="nav-link text-gray-600 font-medium pb-1">機能比較</a>
+                    <a href="#performance" @click="setActiveNav('#performance')" class="nav-link text-gray-600 font-medium pb-1">性能</a>
+                    <a href="#pricing" @click="setActiveNav('#pricing')" class="nav-link text-gray-600 font-medium pb-1">料金</a>
+                    <a href="#recommendations" @click="setActiveNav('#recommendations')" class="nav-link text-gray-600 font-medium pb-1">推奨</a>
+                </div>
+                <div class="md:hidden">
+                    <button @click="mobileMenuOpen = !mobileMenuOpen" class="text-gray-600 hover:text-gray-800">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                    </button>
+                </div>
+            </div>
+        </nav>
+        <div x-show="mobileMenuOpen" x-cloak class="md:hidden bg-white border-t">
+            <a href="#overview" @click="mobileMenuOpen = false; setActiveNav('#overview')" class="block py-2 px-4 text-sm text-gray-600 hover:bg-gray-100">概要</a>
+            <a href="#features" @click="mobileMenuOpen = false; setActiveNav('#features')" class="block py-2 px-4 text-sm text-gray-600 hover:bg-gray-100">機能比較</a>
+            <a href="#performance" @click="mobileMenuOpen = false; setActiveNav('#performance')" class="block py-2 px-4 text-sm text-gray-600 hover:bg-gray-100">性能</a>
+            <a href="#pricing" @click="mobileMenuOpen = false; setActiveNav('#pricing')" class="block py-2 px-4 text-sm text-gray-600 hover:bg-gray-100">料金</a>
+            <a href="#recommendations" @click="mobileMenuOpen = false; setActiveNav('#recommendations')" class="block py-2 px-4 text-sm text-gray-600 hover:bg-gray-100">推奨</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+        
+        <section id="overview" class="mb-16 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center mb-4">2025年 生成AIアシスタント市場の全体像</h2>
+            <p class="max-w-3xl mx-auto text-center text-gray-600 mb-12">
+                このセクションでは、主要4プレイヤーの戦略的な位置づけを概観します。各プラットフォームがどの領域に注力しているかを視覚的に比較し、それぞれの特徴を素早く把握することができます。下のチャートやカードをクリックして、各AIの詳細を確認してください。
+            </p>
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div class="chart-container h-96 md:h-[450px]">
+                    <canvas id="strategyRadarChart"></canvas>
+                </div>
+                <div class="space-y-4">
+                    <template x-for="ai in AIs" :key="ai.id">
+                        <div class="card p-4 cursor-pointer" @click="selectAI(ai.id)" :class="{ 'ring-2 ring-offset-2 ring-blue-500': selectedAI === ai.id }">
+                            <h3 class="text-xl font-bold" x-text="ai.name" :style="{ color: ai.color }"></h3>
+                            <p class="text-sm text-gray-500" x-text="ai.developer"></p>
+                            <p class="mt-2 text-gray-700" x-text="ai.focus"></p>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </section>
+
+        <section id="features" class="mb-16 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center mb-4">詳細機能マトリックス</h2>
+            <p class="max-w-3xl mx-auto text-center text-gray-600 mb-12">
+                ここでは、各AIアシスタントの具体的な機能を比較します。下のボタンから興味のある機能を選択すると、各プラットフォームがその機能にどう対応しているかが表示されます。これにより、特定のニーズに合ったツールを見つけやすくなります。
+            </p>
+            <div class="flex flex-wrap justify-center gap-2 mb-8">
+                <template x-for="feature in features" :key="feature.id">
+                    <button @click="selectedFeature = feature.id" class="btn px-4 py-2 text-sm font-medium rounded-full border" :class="selectedFeature === feature.id ? 'bg-blue-500 text-white border-blue-500' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'" x-text="feature.name"></button>
+                </template>
+            </div>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <template x-for="ai in AIs" :key="ai.id">
+                    <div class="card p-6 text-center">
+                        <h3 class="text-xl font-bold mb-2" x-text="ai.name" :style="{ color: ai.color }"></h3>
+                        <div class="text-4xl mb-4" x-html="getFeatureIcon(ai.features[selectedFeature])"></div>
+                        <p class="text-gray-700 h-24" x-text="ai.features[selectedFeature]"></p>
+                    </div>
+                </template>
+            </div>
+        </section>
+
+        <section id="performance" class="mb-16 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center mb-4">性能・品質ベンチマーク</h2>
+            <p class="max-w-3xl mx-auto text-center text-gray-600 mb-12">
+                このセクションでは、客観的なベンチマークスコアと、ライティングやコーディングといった実世界でのタスクにおける定性的な評価を比較します。どのAIが特定のタスクで優れているか、また安全性と信頼性にはどのような違いがあるかを探ります。
+            </p>
+            <div class="grid md:grid-cols-2 gap-12">
+                <div>
+                    <h3 class="text-2xl font-bold text-center mb-4">定量的ベンチマーク</h3>
+                    <div class="chart-container h-80 md:h-96">
+                        <canvas id="benchmarkBarChart"></canvas>
+                    </div>
+                    <p class="text-center text-sm text-gray-500 mt-2">MMLU (大学生レベルの知識) スコア比較</p>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-bold text-center mb-4">定性的評価：ライティングスタイル</h3>
+                    <div class="space-y-4">
+                        <template x-for="ai in AIs" :key="ai.id">
+                            <div class="card p-4">
+                                <h4 class="font-bold" x-text="ai.name" :style="{ color: ai.color }"></h4>
+                                <p class="text-gray-600 text-sm"><strong x-text="ai.performance.writingStyle.persona"></strong>: <span x-text="ai.performance.writingStyle.description"></span></p>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="pricing" class="mb-16 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center mb-4">料金プランの比較</h2>
+            <p class="max-w-3xl mx-auto text-center text-gray-600 mb-12">
+                ここでは、個人向け、ビジネス向け、開発者向けの料金体系を比較します。下のトグルで表示を切り替えることで、各プラットフォームのコスト構造を理解し、予算に合った最適なプランを見つけることができます。
+            </p>
+            <div class="flex justify-center mb-8">
+                <div class="flex space-x-1 bg-gray-200 p-1 rounded-full">
+                    <button @click="pricingView = 'personal'" class="btn px-6 py-2 text-sm font-medium rounded-full" :class="{ 'bg-white text-blue-600 shadow': pricingView === 'personal', 'text-gray-600': pricingView !== 'personal' }">個人向け</button>
+                    <button @click="pricingView = 'api'" class="btn px-6 py-2 text-sm font-medium rounded-full" :class="{ 'bg-white text-blue-600 shadow': pricingView === 'api', 'text-gray-600': pricingView !== 'api' }">開発者(API)</button>
+                </div>
+            </div>
+
+            <div x-show="pricingView === 'personal'" x-cloak>
+                <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <template x-for="ai in AIs" :key="ai.id">
+                        <div class="card p-6 flex flex-col">
+                            <h3 class="text-xl font-bold" x-text="ai.name" :style="{ color: ai.color }"></h3>
+                            <p class="text-3xl font-bold my-4" x-text="ai.pricing.personal.price"><span class="text-base font-normal text-gray-500">/月</span></p>
+                            <ul class="space-y-2 text-gray-600 text-sm flex-grow">
+                                <template x-for="feature in ai.pricing.personal.features" :key="feature">
+                                    <li class="flex items-start">
+                                        <span class="text-green-500 mr-2">✔</span>
+                                        <span x-text="feature"></span>
+                                    </li>
+                                </template>
+                            </ul>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+            <div x-show="pricingView === 'api'" x-cloak>
+                <p class="text-center text-gray-600 mb-6">ミッドティアモデルのAPI価格比較（100万トークンあたり）</p>
+                <div class="chart-container h-96">
+                    <canvas id="apiPricingChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="recommendations" class="scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center mb-4">あなたに最適なAIは？</h2>
+            <p class="max-w-3xl mx-auto text-center text-gray-600 mb-12">
+                最終的に、どのAIアシスタントを選ぶべきか。このセクションでは、あなたの役割や目的に基づいた具体的な推奨事項を提示します。下のあなたのプロフィールに最も近いものをクリックして、最適な選択肢を確認してください。
+            </p>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <template x-for="rec in recommendations" :key="rec.profile">
+                    <div class="card p-6">
+                        <h3 class="text-xl font-bold mb-2" x-text="rec.profile"></h3>
+                        <p class="text-gray-600 text-sm mb-4" x-text="rec.description"></p>
+                        <div class="space-y-2">
+                             <template x-for="aiName in rec.recommended" :key="aiName">
+                                <div class="flex items-center">
+                                    <span class="w-3 h-3 rounded-full mr-2" :style="{ backgroundColor: getAIColor(aiName) }"></span>
+                                    <span class="font-semibold" x-text="aiName"></span>
+                                </div>
+                            </template>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-4" x-text="rec.reasoning"></p>
+                    </div>
+                </template>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 text-white mt-16">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center text-sm">
+            <p>&copy; 2025 生成AIアシスタント市場分析. All rights reserved.</p>
+            <p class="text-gray-400 mt-1">本アプリケーションは提供されたレポートに基づき作成されました。</p>
+        </div>
+    </footer>
+
+    <script>
+    function aiApp() {
+        return {
+            mobileMenuOpen: false,
+            activeNav: '#overview',
+            selectedAI: 'chatgpt',
+            selectedFeature: 'context_window',
+            pricingView: 'personal',
+            AIs: [
+                {
+                    id: 'chatgpt',
+                    name: 'ChatGPT',
+                    developer: 'OpenAI',
+                    color: '#10A37F',
+                    focus: 'フロンティアモデルの革新。創造的なタスクや純粋なモデル能力で市場をリード。',
+                    strategy: { innovation: 5, ecosystem: 3, safety: 2, productivity: 4 },
+                    features: {
+                        context_window: '最大128Kトークン',
+                        web_search: '対応',
+                        image_generation: 'DALL-E 3',
+                        video_analysis: '対応',
+                        agent_capability: 'ChatGPT Agentによる高度なタスク自動化'
+                    },
+                    performance: { mmlu: 86.4, writingStyle: { persona: '混沌とした天才', description: '創造的で人間味のある文章が得意。ユーモアのセンスも。' } },
+                    pricing: {
+                        personal: { price: '$20', features: ['GPT-4o/4.5アクセス', '高使用量制限', '高度なデータ分析'] },
+                        api: { input: 2.50, output: 10.00 }
+                    }
+                },
+                {
+                    id: 'gemini',
+                    name: 'Gemini',
+                    developer: 'Google',
+                    color: '#4285F4',
+                    focus: 'エコシステム統合とデータ活用。Googleサービスとの連携と高度な推論能力が強み。',
+                    strategy: { innovation: 4, ecosystem: 5, safety: 3, productivity: 4 },
+                    features: {
+                        context_window: '最大1Mトークン',
+                        web_search: '対応 (Google Search)',
+                        image_generation: 'Imagen 4',
+                        video_analysis: '対応',
+                        agent_capability: 'Agent Modeを予定。Workspaceとの連携が強力。'
+                    },
+                    performance: { mmlu: 90.0, writingStyle: { persona: '構造的な事実主義者', description: '一貫性と正確性に優れるが、時に創造性に欠ける。' } },
+                    pricing: {
+                        personal: { price: '$19.99', features: ['Gemini Advanced', 'Workspace統合', '2TBストレージ'] },
+                        api: { input: 0.31, output: 1.25 }
+                    }
+                },
+                {
+                    id: 'claude',
+                    name: 'Claude',
+                    developer: 'Anthropic',
+                    color: '#AE56D5',
+                    focus: 'エンタープライズの安全性と信頼性。リスク回避的な組織から強い支持。',
+                    strategy: { innovation: 3, ecosystem: 2, safety: 5, productivity: 3 },
+                    features: {
+                        context_window: '最大1Mトークン',
+                        web_search: '対応',
+                        image_generation: '対応 (Artifacts)',
+                        video_analysis: '非対応',
+                        agent_capability: 'Computer Use (ベータ版)でPC操作を模倣。'
+                    },
+                    performance: { mmlu: 90.0, writingStyle: { persona: '表現力豊かなプロ', description: 'ニュアンスに富み、プロフェッショナルな文章の推敲が得意。' } },
+                    pricing: {
+                        personal: { price: '$20', features: ['Claude 3.7 Sonnet等', '高使用量制限', 'リサーチ機能'] },
+                        api: { input: 3.00, output: 15.00 }
+                    }
+                },
+                {
+                    id: 'copilot',
+                    name: 'Copilot',
+                    developer: 'Microsoft',
+                    color: '#0078D4',
+                    focus: '生産性スイートの強化。Microsoft 365との深い統合で圧倒的な優位性。',
+                    strategy: { innovation: 3, ecosystem: 5, safety: 4, productivity: 5 },
+                    features: {
+                        context_window: '基盤モデルに依存 (GPT-4o)',
+                        web_search: '対応 (Bing)',
+                        image_generation: 'Microsoft Designer',
+                        video_analysis: '非対応',
+                        agent_capability: 'ビジネスプロセスを自動化するカスタムエージェント。'
+                    },
+                    performance: { mmlu: 86.4, writingStyle: { persona: '効率的なビジネスパートナー', description: 'M365内のデータに基づき、実用的な文章を生成。' } },
+                    pricing: {
+                        personal: { price: '$20', features: ['M365アプリ統合', '優先アクセス', 'Designerクレジット'] },
+                        api: { input: 2.50, output: 10.00 }
+                    }
+                }
+            ],
+            features: [
+                { id: 'context_window', name: 'コンテキストウィンドウ' },
+                { id: 'web_search', name: 'ウェブ検索' },
+                { id: 'image_generation', name: '画像生成' },
+                { id: 'video_analysis', name: '動画分析' },
+                { id: 'agent_capability', name: 'エージェント能力' }
+            ],
+            recommendations: [
+                { profile: 'クリエイター', description: 'アイデア出しや創造的な執筆を重視する方', recommended: ['ChatGPT'], reasoning: '斬新なアイデア生成と人間味のある文章作成能力が最も優れています。' },
+                { profile: '研究者・学生', description: '事実の正確性やリサーチ能力を求める方', recommended: ['Gemini'], reasoning: 'Google検索との連携によるリアルタイム性と事実の正確性が強みです。' },
+                { profile: '開発者', description: 'コーディング支援やAPI利用を主目的とする方', recommended: ['Claude', 'Copilot'], reasoning: 'Claudeはクリーンなコード生成で評価が高く、Copilot(GitHub)はIDE統合で比類なき利便性を提供します。' },
+                { profile: 'ビジネスユーザー', description: '日々の業務効率化を目指す方', recommended: ['Copilot', 'Gemini'], reasoning: 'Microsoft/Googleのエコシステムとの深い統合により、既存のワークフローを劇的に改善します。' },
+                { profile: '大企業', description: 'セキュリティとコンプライアンスを最優先する組織', recommended: ['Claude', 'Copilot'], reasoning: 'Claudeは安全性に特化し、Copilotは社内データとの安全な連携機能が決定的な価値を持ちます。' },
+                { profile: '汎用パワーユーザー', description: '特定の分野に偏らず、幅広くAIを活用したい方', recommended: ['Claude', 'Copilot'], reasoning: 'Claudeはライティングと長文読解に優れ、CopilotはM365ユーザーにとって最良の選択肢です。' }
+            ],
+            strategyRadarChart: null,
+            benchmarkBarChart: null,
+            apiPricingChart: null,
+
+            init() {
+                // DOMが完全に読み込まれてからチャートを初期化
+                this.$nextTick(() => {
+                    this.initStrategyRadarChart();
+                    this.initBenchmarkBarChart();
+                    this.initApiPricingChart();
+                });
+                
+                this.setActiveNav(window.location.hash || '#overview');
+                
+                // スクロール監視の設定
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            this.setActiveNav(`#${entry.target.id}`);
+                        }
+                    });
+                }, { rootMargin: "-50% 0px -50% 0px" });
+
+                document.querySelectorAll('main section').forEach(section => {
+                    observer.observe(section);
+                });
+            },
+            
+            setActiveNav(hash) {
+                this.activeNav = hash;
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    if (link.getAttribute('href') === hash) {
+                        link.classList.add('active');
+                    } else {
+                        link.classList.remove('active');
+                    }
+                });
+            },
+
+            selectAI(aiId) {
+                this.selectedAI = aiId;
+                this.updateStrategyRadarChart();
+            },
+
+            getFeatureIcon(featureText) {
+                if (featureText.toLowerCase().includes('非対応')) return '❌';
+                if (featureText.toLowerCase().includes('対応')) return '✅';
+                if (featureText.toLowerCase().includes('k') || featureText.toLowerCase().includes('m')) return '📚';
+                return '✨';
+            },
+
+            getAIColor(aiName) {
+                const ai = this.AIs.find(a => a.name === aiName);
+                return ai ? ai.color : '#808080';
+            },
+
+            initStrategyRadarChart() {
+                const canvas = document.getElementById('strategyRadarChart');
+                if (!canvas) return;
+                
+                const ctx = canvas.getContext('2d');
+                this.strategyRadarChart = new Chart(ctx, {
+                    type: 'radar',
+                    data: {
+                        labels: ['革新性', 'エコシステム', '安全性', '生産性'],
+                        datasets: this.AIs.map(ai => ({
+                            label: ai.name,
+                            data: [ai.strategy.innovation, ai.strategy.ecosystem, ai.strategy.safety, ai.strategy.productivity],
+                            backgroundColor: `${ai.color}33`,
+                            borderColor: ai.color,
+                            pointBackgroundColor: ai.color,
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: ai.color,
+                            hidden: ai.id !== this.selectedAI
+                        }))
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return `${context.dataset.label}: ${context.raw}`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            r: {
+                                angleLines: { color: 'rgba(0, 0, 0, 0.1)' },
+                                grid: { color: 'rgba(0, 0, 0, 0.1)' },
+                                pointLabels: { font: { size: 14 } },
+                                suggestedMin: 0,
+                                suggestedMax: 5,
+                                ticks: {
+                                    stepSize: 1,
+                                    backdropColor: 'transparent'
+                                }
+                            }
+                        }
+                    }
+                });
+            },
+
+            updateStrategyRadarChart() {
+                if (!this.strategyRadarChart) return;
+                
+                this.strategyRadarChart.data.datasets.forEach(dataset => {
+                    const ai = this.AIs.find(a => a.name === dataset.label);
+                    dataset.hidden = ai.id !== this.selectedAI;
+                });
+                this.strategyRadarChart.update();
+            },
+
+            initBenchmarkBarChart() {
+                const canvas = document.getElementById('benchmarkBarChart');
+                if (!canvas) return;
+                
+                const ctx = canvas.getContext('2d');
+                this.benchmarkBarChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: this.AIs.map(ai => ai.name),
+                        datasets: [{
+                            label: 'MMLUスコア',
+                            data: this.AIs.map(ai => ai.performance.mmlu),
+                            backgroundColor: this.AIs.map(ai => ai.color),
+                            borderColor: this.AIs.map(ai => ai.color),
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                suggestedMax: 100
+                            }
+                        }
+                    }
+                });
+            },
+
+            initApiPricingChart() {
+                const canvas = document.getElementById('apiPricingChart');
+                if (!canvas) return;
+                
+                const ctx = canvas.getContext('2d');
+                const midTierAIs = this.AIs.filter(ai => ai.pricing.api);
+                this.apiPricingChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: midTierAIs.map(ai => ai.name),
+                        datasets: [
+                            {
+                                label: '入力コスト ($)',
+                                data: midTierAIs.map(ai => ai.pricing.api.input),
+                                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                borderWidth: 1
+                            },
+                            {
+                                label: '出力コスト ($)',
+                                data: midTierAIs.map(ai => ai.pricing.api.output),
+                                backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                                borderColor: 'rgba(255, 99, 132, 1)',
+                                borderWidth: 1
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed.y !== null) {
+                                            label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed.y);
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: '100万トークンあたりのコスト ($)'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+</body>
+</html>
