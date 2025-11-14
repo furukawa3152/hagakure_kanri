@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Streamlit実践会 - HAGAKUREプログラミング塾</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #e0f7fa; /* Light Cyan */
+            color: #263238; /* Dark Grey Blue */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .slider-container {
+            width: 100%;
+            height: 800px; /* 1ページの高さ制約 */
+            position: relative;
+            overflow: hidden;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            background-color: #ffffff;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 100%;
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            transition: left 0.5s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 30px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            left: 0;
+        }
+
+        .slide h1 {
+            font-size: 3.2em;
+            color: #007bff; /* Bright Blue */
+            margin-bottom: 15px;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 15px;
+            border-radius: 12px;
+            z-index: 2;
+        }
+
+        .slide h2 {
+            font-size: 2.3em;
+            color: #00796b; /* Teal */
+            margin-bottom: 20px;
+        }
+
+        .slide p {
+            font-size: 1.3em;
+            line-height: 1.7;
+            max-width: 90%;
+            color: #455a64; /* Blue Grey */
+            margin: 10px 0;
+        }
+
+        .slide a {
+            font-size: 1.2em;
+            color: #00796b; /* Teal */
+            text-decoration: none;
+            margin-top: 12px;
+        }
+
+        .slide a:hover {
+            text-decoration: underline;
+        }
+
+        #hero-slide {
+            background: url('20251116hero.png') no-repeat center center/cover;
+            color: white;
+        }
+
+        #hero-slide h1 {
+            color: white;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .slide .community-name {
+            font-size: 1.4em;
+            color: white;
+            margin-top: -10px;
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 8px 16px;
+            border-radius: 8px;
+        }
+
+        .goal {
+            font-size: 1.9em !important;
+            color: #d84315; /* Deep Orange */
+            font-weight: bold;
+            margin-top: 15px;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+        }
+
+        .arrow {
+            background-color: #00796b; /* Teal */
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            font-size: 1.8em;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .arrow:hover {
+            background-color: #004d40; /* Darker Teal */
+        }
+
+        .arrow:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .character-image {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 140px;
+            height: auto;
+            z-index: 10;
+        }
+
+        .content-list {
+            text-align: left;
+            font-size: 1.15em;
+            line-height: 1.6;
+            max-width: 90%;
+            margin: 10px 0;
+        }
+
+        .content-list li {
+            margin-bottom: 8px;
+        }
+
+        .code-block {
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            text-align: left;
+            max-width: 92%;
+            margin: 10px 0;
+            overflow-x: auto;
+            white-space: pre;
+            line-height: 1.4;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .chapter-title {
+            font-size: 2em !important;
+            color: #d84315; /* Deep Orange */
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .chapter-subtitle {
+            font-size: 1.3em;
+            color: #00796b;
+            margin-bottom: 12px;
+        }
+
+        .time-box {
+            background-color: #fff3e0;
+            border: 2px solid #ff9800;
+            border-radius: 8px;
+            padding: 10px;
+            margin: 8px 0;
+            font-size: 1.1em;
+            color: #e65100;
+            font-weight: bold;
+        }
+
+        .highlight {
+            background-color: #fff9c4;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+    </style>
+    <meta name="robots" content="noindex" />
+    <meta name="description" content="Streamlitで「自分が使いたいアプリ」を実際に作っていく実践会。90分でプロトタイプを作成します。">
+</head>
+<body>
+    <div class="slider-container">
+        <!-- 1: Hero -->
+        <section id="hero-slide" class="slide active">
+            <h1>Python勉強会やろうぜ<br>Streamlit実践会</h1>
+            <p class="community-name">HAGAKUREプログラミング塾　2025.11.16</p>
+        </section>
+
+        <!-- 2: 概要 -->
+        <section class="slide">
+            <h2>今日の内容</h2>
+            <ul class="content-list">
+                <li>Streamlitで「自分が使いたいアプリ」を実際に作る</li>
+                <li>前回の基礎編を踏まえた実践編</li>
+                <li>各自のアイデアを形にする</li>
+                <li>生成AI（ChatGPT / Cursor 等）の利用もOK</li>
+                <li>ディティールができていなくてもOK、アイデアだけの参加も大歓迎</li>
+            </ul>
+        </section>
+
+        <!-- 3: 環境確認 -->
+        <section class="slide">
+            <h2>環境確認</h2>
+            <p>画面共有は見えていますか？<br>音声ははっきりと聞こえていますか？<br>チャットはSlackの方でお願いします。</p>
+        </section>
+
+        <!-- 4: Special Thanks -->
+        <section class="slide">
+            <h2>Special Thanks</h2>
+            <p>佐賀県産業スマート化センターさまのコミュニティ支援にて、<br>ZOOMの有料プランを提供いただき、利用させていただいております。<br>
+                <a href="https://www.saga-smart.jp/" target="_blank">https://www.saga-smart.jp/</a>
+            </p>
+        </section>
+
+        <!-- 5: 今日のゴール -->
+        <section class="slide">
+            <h2>今日のゴール</h2>
+            <p>各自のアイデアをStreamlitでプロトタイプ化する</p>
+            <p class="goal">90分で「動くもの」を作る！</p>
+        </section>
+
+        <!-- 6: タイムスケジュール -->
+        <section class="slide">
+            <h2 class="chapter-title">タイムスケジュール（90分）</h2>
+            <div class="content-list">
+                <div class="time-box">21:30-21:35（5分）オープニング</div>
+                <div class="time-box">21:35-21:50（15分）アイデア共有</div>
+                <div class="time-box">21:50-22:05（15分）画面・データの最小構成設計</div>
+                <div class="time-box">22:05-22:45（40分）Streamlitでプロトタイピング</div>
+                <div class="time-box">22:45-22:55（10分）デプロイ・機能拡張</div>
+                <div class="time-box">22:55-23:00（5分）クロージング</div>
+            </div>
+        </section>
+
+        <!-- 7: アイデア共有の進め方 -->
+        <section class="slide">
+            <h2 class="chapter-title">アイデア共有（15分）</h2>
+            <p class="chapter-subtitle">あなたが欲しいアプリは？</p>
+            <ul class="content-list">
+                <li>各自、1-2分でアイデアを発表</li>
+                <li>どんな問題を解決したいか？</li>
+                <li>誰が使うアプリか？</li>
+                <li>最低限必要な機能は？</li>
+                <li>ディティールは後回しでOK！</li>
+            </ul>
+            <p style="margin-top: 12px; font-size: 1.1em; color: #d84315;">
+                💡 アイデアがない人も大歓迎！<br>他の人のアイデアに参加したり、一緒に考えましょう
+            </p>
+        </section>
+
+        <!-- 8: アイデア例 -->
+        <section class="slide">
+            <h2 class="chapter-title">アイデア例</h2>
+            <ul class="content-list">
+                <li>📝 日記・記録アプリ（体重、読書、学習時間など）</li>
+                <li>📊 データ可視化ツール（CSV読み込み、グラフ表示）</li>
+                <li>🎲 ランダム選択ツール（今日のランチ、TODO抽選など）</li>
+                <li>📅 スケジュール管理（簡易版）</li>
+                <li>💬 チャットボット（特定の用途に特化）</li>
+                <li>📈 家計簿・収支管理</li>
+                <li>🎨 画像処理ツール（リサイズ、フィルターなど）</li>
+                <li>📚 学習管理（進捗トラッキング）</li>
+            </ul>
+        </section>
+
+        <!-- 9: 最小構成設計の考え方 -->
+        <section class="slide">
+            <h2 class="chapter-title">画面・データの最小構成設計（15分）</h2>
+            <p class="chapter-subtitle">一緒に設計しましょう</p>
+            <ul class="content-list">
+                <li><span class="highlight">画面構成</span>：どんな画面が必要？</li>
+                <li><span class="highlight">入力データ</span>：ユーザーは何を入力する？</li>
+                <li><span class="highlight">出力データ</span>：何を表示・出力する？</li>
+                <li><span class="highlight">データ保存</span>：データはどう保存する？（CSV、JSON、メモリなど）</li>
+                <li><span class="highlight">最小機能</span>：最初に作る最小の機能は？</li>
+            </ul>
+        </section>
+
+        <!-- 10: Streamlitの基本（復習） -->
+        <section class="slide">
+            <h2 class="chapter-title">Streamlitの基本（復習）</h2>
+            <p class="chapter-subtitle">最小構成の例</p>
+            <pre class="code-block">import streamlit as st
+
+st.title("アプリのタイトル")
+st.write("説明文")
+
+# 入力
+user_input = st.text_input("入力してください")
+button = st.button("実行")
+
+# 処理と出力
+if button:
+    result = f"入力された内容: {user_input}"
+    st.write(result)</pre>
+        </section>
+
+        <!-- 11: Streamlitの主要コンポーネント -->
+        <section class="slide">
+            <h2 class="chapter-title">Streamlitの主要コンポーネント</h2>
+            <ul class="content-list">
+                <li><span class="highlight">st.text_input()</span> - テキスト入力</li>
+                <li><span class="highlight">st.number_input()</span> - 数値入力</li>
+                <li><span class="highlight">st.selectbox()</span> - 選択ボックス</li>
+                <li><span class="highlight">st.button()</span> - ボタン</li>
+                <li><span class="highlight">st.file_uploader()</span> - ファイルアップロード</li>
+                <li><span class="highlight">st.dataframe()</span> - データフレーム表示</li>
+                <li><span class="highlight">st.line_chart()</span> - 折れ線グラフ</li>
+                <li><span class="highlight">st.bar_chart()</span> - 棒グラフ</li>
+            </ul>
+        </section>
+
+        <!-- 12: プロトタイピング（40分） -->
+        <section class="slide">
+            <h2 class="chapter-title">Streamlitでプロトタイピング（40分）</h2>
+            <p class="chapter-subtitle">実装タイム！</p>
+            <ul class="content-list">
+                <li>各自、設計した最小構成を実装</li>
+                <li>生成AI（ChatGPT / Cursor）の利用もOK</li>
+                <li>わからないことはSlackで質問</li>
+                <li>完璧を目指さず、<span class="highlight">動くもの</span>を優先</li>
+                <li>途中で詰まったら、他の人の進捗を見てみる</li>
+            </ul>
+            <p style="margin-top: 12px; font-size: 1.1em; color: #00796b;">
+                💻 まずは最小構成を動かすことを目標に！
+            </p>
+        </section>
+
+        <!-- 13: デプロイ方法 -->
+        <section class="slide">
+            <h2 class="chapter-title">デプロイ・機能拡張（10分）</h2>
+            <p class="chapter-subtitle">できた人はデプロイを実施</p>
+            <ul class="content-list">
+                <li><span class="highlight">Streamlit Cloud</span>（無料・簡単）
+                    <ul style="font-size: 0.9em; margin-top: 8px;">
+                        <li>GitHubにコードをプッシュ</li>
+                        <li><a href="https://streamlit.io/cloud" target="_blank">streamlit.io/cloud</a>でデプロイ</li>
+                    </ul>
+                </li>
+                <li><span class="highlight">機能拡張のアイデア</span>
+                    <ul style="font-size: 0.9em; margin-top: 8px;">
+                        <li>データのエクスポート機能</li>
+                        <li>グラフの追加</li>
+                        <li>検索・フィルター機能</li>
+                        <li>データの編集・削除機能</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <!-- 14: Streamlit Cloudデプロイ手順 -->
+        <section class="slide">
+            <h2 class="chapter-title">Streamlit Cloudデプロイ手順</h2>
+            <ol class="content-list">
+                <li>GitHubにリポジトリを作成</li>
+                <li>コードをプッシュ（requirements.txtも含める）</li>
+                <li><a href="https://share.streamlit.io/" target="_blank">share.streamlit.io</a>にアクセス</li>
+                <li>GitHubアカウントでログイン</li>
+                <li>「New app」をクリック</li>
+                <li>リポジトリ、ブランチ、メインファイルを選択</li>
+                <li>「Deploy」をクリック</li>
+            </ol>
+            <p style="margin-top: 12px; font-size: 1em; color: #00796b;">
+                ⚠️ 機密情報（APIキーなど）は環境変数で管理
+            </p>
+        </section>
+
+        <!-- 15: requirements.txtの例 -->
+        <section class="slide">
+            <h2 class="chapter-title">requirements.txtの例</h2>
+            <p class="chapter-subtitle">デプロイ時に必要</p>
+            <pre class="code-block">streamlit>=1.28.0
+pandas>=2.0.0
+numpy>=1.24.0</pre>
+            <p style="margin-top: 12px; font-size: 1em;">
+                使用しているライブラリを記載します
+            </p>
+        </section>
+
+        <!-- 16: 困ったときのヒント -->
+        <section class="slide">
+            <h2 class="chapter-title">困ったときのヒント</h2>
+            <ul class="content-list">
+                <li><span class="highlight">Streamlit公式ドキュメント</span>
+                    <br><a href="https://docs.streamlit.io/" target="_blank">docs.streamlit.io</a>
+                </li>
+                <li><span class="highlight">Streamlit Gallery</span>（参考例）
+                    <br><a href="https://streamlit.io/gallery" target="_blank">streamlit.io/gallery</a>
+                </li>
+                <li><span class="highlight">生成AIに聞く</span>
+                    <br>「Streamlitで〇〇を実装する方法」と聞いてみる
+                </li>
+                <li><span class="highlight">Slackで質問</span>
+                    <br>わからないことは遠慮なく質問してください
+                </li>
+            </ul>
+        </section>
+
+        <!-- 17: まとめ -->
+        <section class="slide">
+            <h2 class="chapter-title">まとめ</h2>
+            <ul class="content-list">
+                <li>アイデアを形にする実践会でした</li>
+                <li>完璧を目指さず、<span class="highlight">動くもの</span>を作ることが大切</li>
+                <li>生成AIを活用して効率的に開発</li>
+                <li>デプロイして実際に使ってみる</li>
+                <li>フィードバックをもらって改善していく</li>
+            </ul>
+            <p class="goal" style="margin-top: 15px;">
+                お疲れ様でした！🎉
+            </p>
+        </section>
+
+        <!-- 18: 次回予告 -->
+        <section class="slide">
+            <h2>次回予告</h2>
+            <p>次回の勉強会もお楽しみに！<br>
+            今回作ったアプリの改善や、<br>
+            新しいテーマでの勉強会を予定しています。</p>
+            <p style="margin-top: 15px; font-size: 1.15em; color: #00796b;">
+                Slackで情報をお知らせします 📢
+            </p>
+        </section>
+    </div>
+
+    <div class="navigation">
+        <button id="prev" class="arrow">&larr;</button>
+        <button id="next" class="arrow">&rarr;</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const slides = document.querySelectorAll('.slide');
+            const prevButton = document.getElementById('prev');
+            const nextButton = document.getElementById('next');
+            let currentSlide = 0;
+
+            // キャラクター画像のパス（必要に応じて追加）
+            const characterImages = [
+                'images/machi-musume.png',
+                'images/voice-ninja1.png',
+                'images/voice-ninja2.png',
+                'images/voice-samurai.png'
+            ];
+
+            // 1枚目以外の各スライドにランダムキャラ画像を配置（画像がある場合）
+            slides.forEach((slide, i) => {
+                if (i > 0 && characterImages.length > 0) {
+                    const img = document.createElement('img');
+                    img.src = characterImages[(i - 1) % characterImages.length];
+                    img.classList.add('character-image');
+                    img.onerror = function() {
+                        this.style.display = 'none'; // 画像が存在しない場合は非表示
+                    };
+                    slide.appendChild(img);
+                }
+            });
+
+            function showSlide(index) {
+                slides.forEach((slide, i) => {
+                    slide.classList.remove('active');
+                    if (i === index) {
+                        slide.classList.add('active');
+                    }
+                });
+                updateNavButtons();
+            }
+
+            function updateNavButtons() {
+                prevButton.disabled = currentSlide === 0;
+                nextButton.disabled = currentSlide === slides.length - 1;
+            }
+
+            prevButton.addEventListener('click', () => {
+                if (currentSlide > 0) {
+                    currentSlide--;
+                    showSlide(currentSlide);
+                }
+            });
+
+            nextButton.addEventListener('click', () => {
+                if (currentSlide < slides.length - 1) {
+                    currentSlide++;
+                    showSlide(currentSlide);
+                }
+            });
+
+            // キーボード操作もサポート
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowLeft' && currentSlide > 0) {
+                    currentSlide--;
+                    showSlide(currentSlide);
+                } else if (e.key === 'ArrowRight' && currentSlide < slides.length - 1) {
+                    currentSlide++;
+                    showSlide(currentSlide);
+                }
+            });
+
+            showSlide(currentSlide);
+        });
+    </script>
+</body>
+</html>
+
