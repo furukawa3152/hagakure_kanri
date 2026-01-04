@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Streamlit入門 × CSV連携 - HAGAKUREプログラミング塾</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #e0f7fa; /* Light Cyan */
+            color: #263238; /* Dark Grey Blue */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .slider-container {
+            width: 100%;
+            height: 800px; /* 1ページの高さ制約 */
+            position: relative;
+            overflow: hidden;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            background-color: #ffffff;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 100%;
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            transition: left 0.5s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 30px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            left: 0;
+        }
+
+        .slide h1 {
+            font-size: 3.2em;
+            color: #007bff; /* Bright Blue */
+            margin-bottom: 15px;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 15px;
+            border-radius: 12px;
+            z-index: 2;
+        }
+
+        .slide h2 {
+            font-size: 2.4em;
+            color: #00796b; /* Teal */
+            margin-bottom: 20px;
+        }
+
+        .slide p {
+            font-size: 1.4em;
+            line-height: 1.7;
+            max-width: 90%;
+            color: #455a64; /* Blue Grey */
+        }
+
+        .slide a {
+            font-size: 1.2em;
+            color: #00796b; /* Teal */
+            text-decoration: none;
+            margin-top: 10px;
+        }
+
+        .slide a:hover {
+            text-decoration: underline;
+        }
+
+        #hero-slide {
+            background: url('webapphero.png') no-repeat center center/cover;
+            color: white;
+        }
+
+        #hero-slide h1 {
+            color: white;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .slide .community-name {
+            font-size: 1.3em;
+            color: white;
+            margin-top: -8px;
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 8px 16px;
+            border-radius: 8px;
+        }
+
+        .goal {
+            font-size: 2em !important;
+            color: #d84315; /* Deep Orange */
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+        }
+
+        .arrow {
+            background-color: #00796b; /* Teal */
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 1.6em;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .arrow:hover {
+            background-color: #004d40; /* Darker Teal */
+        }
+
+        .arrow:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .character-image {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 120px;
+            height: auto;
+            z-index: 10;
+        }
+
+        .content-list {
+            text-align: left;
+            font-size: 1.2em;
+            line-height: 1.7;
+            max-width: 90%;
+        }
+
+        .content-list li {
+            margin-bottom: 10px;
+        }
+
+        .code-block {
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            text-align: left;
+            max-width: 90%;
+            margin: 12px 0;
+            overflow-x: auto;
+            white-space: pre;
+            line-height: 1.4;
+        }
+
+        .chapter-title {
+            font-size: 2em !important;
+            color: #d84315; /* Deep Orange */
+            font-weight: bold;
+            margin-bottom: 18px;
+        }
+
+        .chapter-subtitle {
+            font-size: 1.4em;
+            color: #00796b;
+            margin-bottom: 15px;
+        }
+
+        .highlight {
+            background-color: #fff9c4;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .note {
+            font-size: 1.1em;
+            color: #d84315;
+            margin-top: 12px;
+        }
+    </style>
+    <meta name="robots" content="noindex" />
+    <meta name="description" content="Streamlit入門 - CSVでデータを保存できるWebアプリを手書きで作る初心者向け勉強会">
+</head>
+<body>
+    <div class="slider-container">
+        <!-- 1: Hero -->
+        <section id="hero-slide" class="slide active">
+            <h1>Streamlit入門<br>一番簡単なWebアプリ作成</h1>
+            <p class="community-name">HAGAKUREプログラミング塾</p>
+        </section>
+
+        <!-- 2: 概要 -->
+        <section class="slide">
+            <h2>講座の概要（第1回）</h2>
+            <ul class="content-list">
+                <li><span class="highlight">Streamlit</span>の基本操作</li>
+                <li>テキスト・画像・ボタンの表示</li>
+                <li>ユーザー入力を受け取る</li>
+                <li><span class="highlight">CSV</span>でデータを保存・読み込み</li>
+                <li>データ一覧の表示</li>
+                <li>簡単な検索機能</li>
+            </ul>
+            <p class="note">第2回では、各自が作りたいアプリを相談しながら作ります！</p>
+        </section>
+
+        <!-- 3: 環境確認 -->
+        <section class="slide">
+            <h2>環境確認</h2>
+            <p>画面共有は見えていますか？<br>音声ははっきりと聞こえていますか？<br>チャットはSlackの方でお願いします。</p>
+        </section>
+
+        <!-- 4: Special Thanks -->
+        <section class="slide">
+            <h2>Special Thanks</h2>
+            <p>佐賀県産業スマート化センターさまのコミュニティ支援にて、<br>ZOOMの有料プランを提供いただき、利用させていただいております。<br>
+                <a href="https://www.saga-smart.jp/" target="_blank">https://www.saga-smart.jp/</a>
+            </p>
+        </section>
+
+        <!-- 5: 今日のゴール -->
+        <section class="slide">
+            <h2>今日のゴール</h2>
+            <p>Streamlitで簡単なWebアプリを作り、<br>CSVファイルでデータを保存・読み込みできるようになる</p>
+            <p class="goal">自分の手でWebアプリを作る楽しさを体験！</p>
+        </section>
+
+        <!-- 6: Streamlitとは？ -->
+        <section class="slide">
+            <h2 class="chapter-title">Streamlitとは？</h2>
+            <ul class="content-list">
+                <li>Pythonでサクッと<span class="highlight">Webアプリ</span>が作れるフレームワーク</li>
+                <li>HTMLやCSS、JavaScriptの知識は不要</li>
+                <li>データサイエンスやAIのデモに最適</li>
+                <li>コードを書くだけで、すぐにブラウザで動く</li>
+                <li>リアルタイムで変更が反映される</li>
+            </ul>
+            <p style="margin-top: 20px; font-size: 1.2em;">👉 Pythonコードだけで、インタラクティブなアプリが作れる！</p>
+        </section>
+
+        <!-- 7: 環境構築 -->
+        <section class="slide">
+            <h2 class="chapter-title">環境構築</h2>
+            <p class="chapter-subtitle">必要なパッケージをインストール</p>
+            <pre class="code-block"># bash
+pip install streamlit pandas</pre>
+            <p style="margin-top: 20px;">インストール後、動作確認：</p>
+            <pre class="code-block"># bash
+streamlit hello</pre>
+            <p class="note">ブラウザが開いて、デモアプリが表示されればOK！</p>
+        </section>
+
+        <!-- 8: Hello World -->
+        <section class="slide">
+            <h2 class="chapter-title">Step 1: Hello World</h2>
+            <p class="chapter-subtitle">app01.py - 最初のStreamlitアプリ</p>
+            <pre class="code-block">import streamlit as st
+
+st.title("📝 私の最初のStreamlitアプリ")
+st.header("見出し")
+st.write("こんにちは、Streamlit！")
+st.text("普通のテキスト")</pre>
+            <p style="margin-top: 20px;">実行方法：</p>
+            <pre class="code-block"># bash
+streamlit run app01.py</pre>
+        </section>
+
+        <!-- 9: ユーザー入力 -->
+        <section class="slide">
+            <h2 class="chapter-title">Step 2: ユーザー入力</h2>
+            <p class="chapter-subtitle">app02.py - インタラクティブな要素</p>
+            <pre class="code-block">import streamlit as st
+
+st.title("📝 ユーザー入力のテスト")
+
+name = st.text_input("お名前を入力してください")
+age = st.number_input("年齢を入力してください", min_value=0, max_value=120)
+
+if st.button("送信"):
+    st.write(f"こんにちは、{name}さん！")
+    st.write(f"年齢は{age}歳ですね。")</pre>
+        </section>
+
+        <!-- 10: CSVの基本操作 -->
+        <section class="slide">
+            <h2 class="chapter-title">Step 3: CSVの基本操作</h2>
+            <p class="chapter-subtitle">app03.py - データの読み書き</p>
+            <pre class="code-block">import streamlit as st
+import pandas as pd
+import os
+
+CSV_FILE = "data.csv"
+
+# CSVファイルの読み込み（なければ空のDataFrame）
+if os.path.exists(CSV_FILE):
+    df = pd.read_csv(CSV_FILE)
+else:
+    df = pd.DataFrame(columns=["名前", "年齢"])
+
+st.title("📊 CSVデータの表示")
+st.dataframe(df)</pre>
+        </section>
+
+        <!-- 11: データの保存 -->
+        <section class="slide">
+            <h2 class="chapter-title">Step 4: データの保存</h2>
+            <p class="chapter-subtitle">app04.py - データをCSVに保存</p>
+            <pre class="code-block">import streamlit as st
+import pandas as pd
+import os
+
+CSV_FILE = "data.csv"
+
+# データ読み込み
+if os.path.exists(CSV_FILE):
+    df = pd.read_csv(CSV_FILE)
+else:
+    df = pd.DataFrame(columns=["名前", "年齢"])
+
+st.title("📝 データ登録アプリ")
+
+# 入力フォーム
+name = st.text_input("名前")
+age = st.number_input("年齢", min_value=0, max_value=120)
+
+if st.button("登録"):
+    new_data = pd.DataFrame([{"名前": name, "年齢": age}])
+    df = pd.concat([df, new_data], ignore_index=True)
+    df.to_csv(CSV_FILE, index=False)
+    st.success("登録しました！")
+
+st.dataframe(df)</pre>
+        </section>
+
+        <!-- 12: 実践的アプリ -->
+        <section class="slide">
+            <h2 class="chapter-title">Step 5: 実践的アプリ（前半）</h2>
+            <p class="chapter-subtitle">app05.py - お買い物リストアプリ</p>
+            <pre class="code-block">import streamlit as st
+import pandas as pd
+import os
+
+CSV_FILE = "shopping.csv"
+
+# データ読み込み
+if os.path.exists(CSV_FILE):
+    df = pd.read_csv(CSV_FILE)
+else:
+    df = pd.DataFrame(columns=["商品名", "数量", "購入済み"])
+
+st.title("🛒 お買い物リストアプリ")
+
+# 商品追加フォーム
+st.subheader("📝 商品を追加")
+col1, col2 = st.columns([3, 1])
+with col1:
+    item = st.text_input("商品名")
+with col2:
+    quantity = st.number_input("数量", min_value=1, value=1)
+
+if st.button("追加"):
+    if item:
+        new_item = pd.DataFrame([{
+            "商品名": item, "数量": quantity, "購入済み": False
+        }])
+        df = pd.concat([df, new_item], ignore_index=True)
+        df.to_csv(CSV_FILE, index=False)
+        st.success(f"{item} を追加しました！")
+        st.rerun()  # 画面を再読み込み</pre>
+        </section>
+
+        <!-- 12.5: 実践的アプリ（後半） -->
+        <section class="slide">
+            <h2 class="chapter-title">Step 5: 実践的アプリ（後半）</h2>
+            <p class="chapter-subtitle">購入済みチェック機能</p>
+            <pre class="code-block"># 買い物リストの表示と購入済みチェック
+st.subheader("📋 買い物リスト")
+if len(df) > 0:
+    for idx, row in df.iterrows():
+        col1, col2, col3 = st.columns([3, 1, 1])
+        with col1:
+            st.write(f"**{row['商品名']}**")
+        with col2:
+            st.write(f"数量: {row['数量']}")
+        with col3:
+            checked = st.checkbox(
+                "購入済み",
+                value=bool(row['購入済み']),
+                key=f"check_{idx}"
+            )
+            if checked != bool(row['購入済み']):
+                df.loc[idx, '購入済み'] = checked
+                df.to_csv(CSV_FILE, index=False)
+                st.rerun()
+    
+    # 統計情報
+    total = len(df)
+    completed = len(df[df['購入済み'] == True])
+    st.write(f"進捗: {completed}/{total} 完了")
+else:
+    st.info("まだ商品が登録されていません")</pre>
+        </section>
+
+        <!-- ex: ちょっと応用編 表紙 -->
+        <section class="slide">
+            <h2 class="chapter-title">ちょっと応用編</h2>
+            <p class="chapter-subtitle">この後は少しだけ発展的なテクニック</p>
+            <ul class="content-list">
+                <li>🧩 タブ切り替えで画面を整理</li>
+                <li>🔗 URLクエリパラメータで状態を共有</li>
+            </ul>
+        </section>
+
+        <!-- ex1: タブ切り替え -->
+        <section class="slide">
+            <h2 class="chapter-title">ex1: タブ切り替え</h2>
+            <p class="chapter-subtitle">最小限の実装</p>
+            <pre class="code-block">import streamlit as st
+
+st.title("🧩 タブ切り替えの例")
+
+tab_input, tab_result = st.tabs(["入力", "結果"]) 
+
+with tab_input:
+    name = st.text_input("名前")
+    if st.button("保存"):
+        st.session_state["name"] = name
+
+with tab_result:
+    st.write("入力結果")
+    st.write(st.session_state.get("name", "まだ入力されていません"))</pre>
+            <p class="note">タブごとに <span class="highlight">with tab:</span> ブロックでUIを分けます。</p>
+        </section>
+
+        <!-- ex2: URLにパラメータを渡す -->
+        <section class="slide">
+            <h2 class="chapter-title">ex2: URLにパラメータを渡す</h2>
+            <p class="chapter-subtitle">?name=太郎 のように指定して状態を共有</p>
+            <pre class="code-block">import streamlit as st
+
+st.title("クエリパラメータの例")
+
+# 単独パラメータ: ?name=太郎
+name = st.query_params.get("name", "")
+st.write(f"私の名前は{name}です。")
+
+# 複数パラメータ: ?city=Tokyo&tag=sushi
+city = st.query_params.get("city", "")
+tag = st.query_params.get("tag", "")
+st.write(f"出身は{city}、好きなものは{tag}です。")</pre>
+            <ul class="content-list" style="margin-top: 8px;">
+                <li>例（単独）: <span class="highlight">http://127.0.0.1:5500/index.html?name=太郎</span></li>
+                <li>例（複数）: <span class="highlight">http://127.0.0.1:5500/index.html?city=佐賀&amp;tag=カレー</span></li>
+            </ul>
+            <p class="note">URLを共有すれば、開いた時点で同じ値が反映されます。</p>
+        </section>
+
+        <!-- ex3: config.toml 装飾 -->
+        <section class="slide">
+            <h2 class="chapter-title">ex3: config.toml で装飾</h2>
+            <p class="chapter-subtitle">アプリ全体の見た目を設定ファイルで管理</p>
+            <pre class="code-block"># .streamlit/config.toml
+[theme]
+primaryColor = "#FF6B6B"           # ボタンや選択項目の色（赤系）
+backgroundColor = "#FFF9E6"        # 背景色（薄い黄色）
+secondaryBackgroundColor = "#E3F2FD"  # サイドバー背景色（薄い青）
+textColor = "#1A1A1A"              # テキスト色（濃い黒）
+font = "sans serif"                # フォント</pre>
+            <ul class="content-list">
+                <li>📁 <span class="highlight">設置場所</span>: プロジェクト直下に <code>.streamlit</code> フォルダを作成</li>
+                <li>💡 <span class="highlight">効果</span>: アプリ起動時に自動で配色が適用される</li>
+                <li>🎨 <span class="highlight">色の調整</span>: カラーコードを変えるだけでテーマ変更</li>
+            </ul>
+            <p class="note">配色以外（タイトル・レイアウト等）はコードで設定します。</p>
+        </section>
+
+        <!-- ex3.5: set_page_config でページ設定 -->
+        <section class="slide">
+            <h2 class="chapter-title">ex3.5: ページ設定をコードで指定</h2>
+            <p class="chapter-subtitle">st.set_page_config でタイトルやレイアウトを設定</p>
+            <pre class="code-block">import streamlit as st
+
+# 必ず最初の行で呼び出す（他のst.〇〇より前）
+st.set_page_config(
+    page_title="私のアプリ",
+    page_icon="📝",
+    layout="wide"  # 画面幅いっぱい（デフォルトは"centered"）
+)
+
+# ここから通常のコード
+# .streamlit/config.toml の配色が自動で反映される
+st.title("📝 私のアプリ")
+st.write("ブラウザタブのタイトルとアイコンが設定されています")
+st.button("ボタンの色は config.toml の primaryColor")</pre>
+            <ul class="content-list">
+                <li>⚠️ <span class="highlight">重要</span>: 必ずコードの最初の行で呼ぶ（st.title より前）</li>
+                <li>🎨 <span class="highlight">配色</span>: config.toml があれば自動で適用される</li>
+                <li>🔤 <span class="highlight">page_title</span>: ブラウザタブに表示される名前</li>
+                <li>📐 <span class="highlight">layout</span>: "wide"（画面幅いっぱい）or "centered"（中央寄せ）</li>
+            </ul>
+            <p class="note">config.toml（配色）と set_page_config（ページ設定）を両方使えば完璧！</p>
+        </section>
+
+        <!-- 13: 完成版の紹介 -->
+        <section class="slide">
+            <h2 class="chapter-title">お買い物アプリの機能</h2>
+            <p class="chapter-subtitle">今日作ったアプリでできること</p>
+            <ul class="content-list">
+                <li>🛒 <span class="highlight">商品の追加</span>（商品名・数量）</li>
+                <li>📋 <span class="highlight">買い物リストの一覧表示</span></li>
+                <li>✅ <span class="highlight">購入済みチェック</span></li>
+                <li>💾 <span class="highlight">CSVファイルでの永続化</span></li>
+                <li>📊 <span class="highlight">データ件数の表示</span></li>
+            </ul>
+            <p style="margin-top: 20px; font-size: 1.2em;">👉 これをベースに、いろいろなアプリが作れます！</p>
+        </section>
+
+        <!-- 14: デプロイの仕方 -->
+        <section class="slide">
+            <h2 class="chapter-title">アプリを公開しよう</h2>
+            <p class="chapter-subtitle">Streamlit Community Cloudでデプロイ（無料）</p>
+            <ul class="content-list">
+                <li>🌐 <span class="highlight">無料</span>で自分のアプリをWeb公開できる</li>
+                <li>📦 GitHubにコードをpushするだけ</li>
+                <li>🔗 URLを共有すれば誰でもアクセス可能</li>
+            </ul>
+            <p style="margin-top: 20px; font-size: 1.2em;">手順：</p>
+            <ul class="content-list">
+                <li>1. GitHubにリポジトリを作成してコードをpush</li>
+                <li>2. <a href="https://share.streamlit.io/" target="_blank">share.streamlit.io</a> にアクセス</li>
+                <li>3. GitHubでサインイン</li>
+                <li>4. リポジトリ・ブランチ・ファイル名を指定</li>
+                <li>5. Deploy！（数分で公開完了）</li>
+            </ul>
+        </section>
+
+        <!-- 14.5: requirements.txt -->
+        <section class="slide">
+            <h2 class="chapter-title">デプロイ時の注意点</h2>
+            <p class="chapter-subtitle">requirements.txt を作成</p>
+            <pre class="code-block"># requirements.txt
+streamlit
+pandas</pre>
+            <p style="margin-top: 20px;">リポジトリに含めるファイル：</p>
+            <ul class="content-list">
+                <li>📄 <span class="highlight">app.py</span>（メインのアプリファイル）</li>
+                <li>📄 <span class="highlight">requirements.txt</span>（必要なパッケージ）</li>
+                <li>📄 .gitignore（CSVファイルは除外推奨）</li>
+            </ul>
+            <p class="note">注意：CSVファイルはデプロイ時に初期化されます。<br>本格的なアプリにはデータベース（SQLite等）を検討しましょう。</p>
+        </section>
+
+        <!-- 15: 応用アイデア -->
+        <section class="slide">
+            <h2 class="chapter-title">応用アイデア（第2回に向けて）</h2>
+            <ul class="content-list">
+                <li>📚 <span class="highlight">読書記録アプリ</span>（本のタイトル・著者・感想）</li>
+                <li>💰 <span class="highlight">家計簿アプリ</span>（日付・カテゴリ・金額）</li>
+                <li>📝 <span class="highlight">日記アプリ</span>（日付・タイトル・本文）</li>
+                <li>🎬 <span class="highlight">映画レビューアプリ</span>（タイトル・評価・感想）</li>
+                <li>🏃 <span class="highlight">運動記録アプリ</span>（日付・種目・時間）</li>
+                <li>🌱 <span class="highlight">植物管理アプリ</span>（植物名・水やり日・メモ）</li>
+            </ul>
+            <p class="note">次回は、各自が作りたいアプリを一緒に作っていきます！</p>
+        </section>
+
+        <!-- 16: 次回予告 -->
+        <section class="slide">
+            <h2 class="chapter-title">第2回の内容</h2>
+            <p class="chapter-subtitle">各自のアプリ制作ワークショップ</p>
+            <ul class="content-list">
+                <li>今日学んだ基礎をベースに、オリジナルアプリを作成</li>
+                <li>画面共有しながら一緒に実装</li>
+                <li>困ったところは相談しながら進める</li>
+                <li>グラフ表示やフィルタリングなど、発展的な機能も紹介</li>
+                <li>完成したアプリをデプロイして公開</li>
+            </ul>
+            <p style="margin-top: 20px; font-size: 1.2em;">👉 第2回までに作りたいアプリを考えておきましょう！</p>
+        </section>
+
+        <!-- 17: 参考資料 -->
+        <section class="slide">
+            <h2 class="chapter-title">参考資料</h2>
+            <ul class="content-list">
+                <li>公式ドキュメント：<a href="https://docs.streamlit.io/" target="_blank">docs.streamlit.io</a></li>
+                <li>API Reference：<a href="https://docs.streamlit.io/library/api-reference" target="_blank">API一覧</a></li>
+                <li>チートシート：<a href="https://docs.streamlit.io/library/cheatsheet" target="_blank">Cheat sheet</a></li>
+                <li>ギャラリー：<a href="https://streamlit.io/gallery" target="_blank">作例集</a></li>
+                <li>デプロイ：<a href="https://share.streamlit.io/" target="_blank">Streamlit Community Cloud</a></li>
+            </ul>
+        </section>
+
+        <!-- 18: お疲れさまでした -->
+        <section class="slide">
+            <h2 class="chapter-title">お疲れさまでした！</h2>
+            <p class="chapter-subtitle">ご参加ありがとうございました</p>
+            <p>ご質問・フィードバックはSlackまでお願いします。</p>
+            <p style="margin-top: 30px; font-size: 1.3em;">次回は各自のアプリ作りを楽しみましょう！🎉</p>
+        </section>
+    </div>
+
+    <div class="navigation">
+        <button id="prev" class="arrow">&larr;</button>
+        <button id="next" class="arrow">&rarr;</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const slides = document.querySelectorAll('.slide');
+            const prevButton = document.getElementById('prev');
+            const nextButton = document.getElementById('next');
+            let currentSlide = 0;
+
+            const characterImages = [
+                '../images/machi-musume.png',
+                '../images/voice-ninja1.png',
+                '../images/voice-ninja2.png',
+                '../images/voice-samurai.png'
+            ];
+
+            const shuffledImages = characterImages.sort(() => 0.5 - Math.random());
+
+            // 1枚目以外の各スライドにランダムキャラ画像を配置
+            slides.forEach((slide, i) => {
+                if (i > 0) {
+                    const img = document.createElement('img');
+                    img.src = shuffledImages[(i - 1) % shuffledImages.length];
+                    img.classList.add('character-image');
+                    slide.appendChild(img);
+                }
+            });
+
+            function showSlide(index) {
+                slides.forEach((slide, i) => {
+                    slide.classList.remove('active');
+                    if (i === index) {
+                        slide.classList.add('active');
+                    }
+                });
+                updateNavButtons();
+            }
+
+            function updateNavButtons() {
+                prevButton.disabled = currentSlide === 0;
+                nextButton.disabled = currentSlide === slides.length - 1;
+            }
+
+            prevButton.addEventListener('click', () => {
+                if (currentSlide > 0) {
+                    currentSlide--;
+                    showSlide(currentSlide);
+                }
+            });
+
+            nextButton.addEventListener('click', () => {
+                if (currentSlide < slides.length - 1) {
+                    currentSlide++;
+                    showSlide(currentSlide);
+                }
+            });
+
+            // キーボード操作対応
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowLeft' && currentSlide > 0) {
+                    currentSlide--;
+                    showSlide(currentSlide);
+                } else if (e.key === 'ArrowRight' && currentSlide < slides.length - 1) {
+                    currentSlide++;
+                    showSlide(currentSlide);
+                }
+            });
+
+            showSlide(currentSlide);
+        });
+    </script>
+</body>
+</html>
+

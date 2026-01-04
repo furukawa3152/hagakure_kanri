@@ -226,7 +226,7 @@
                 <li>Streamlitで「自分が使いたいアプリ」を実際に作る</li>
                 <li>前回の基礎編を踏まえた実践編</li>
                 <li>各自のアイデアを形にする</li>
-                <li>生成AI（ChatGPT / Cursor 等）の利用もOK</li>
+                <li>生成AI（ChatGPT / Gemini等）の利用もOK</li>
                 <li>ディティールができていなくてもOK、アイデアだけの参加も大歓迎</li>
             </ul>
         </section>
@@ -249,7 +249,7 @@
         <section class="slide">
             <h2>今日のゴール</h2>
             <p>各自のアイデアをStreamlitでプロトタイプ化する</p>
-            <p class="goal">90分で「動くもの」を作る！</p>
+            <p class="goal">「課題」をプログラミングで解決する。を体験！</p>
         </section>
 
         <!-- 6: タイムスケジュール -->
@@ -296,6 +296,30 @@
             </ul>
         </section>
 
+        <!-- 8.5: デプロイ方法の選択肢 -->
+        <section class="slide">
+            <h2 class="chapter-title">デプロイ方法</h2>
+            <p class="chapter-subtitle">作ったアプリを「どこで」「誰に」届けるか？</p>
+            <ul class="content-list">
+                <li>
+                    🌐 <span class="highlight">Webアプリとしてデプロイ</span><br>
+                    インターネット経由で誰でもアクセスできる形で公開します。<br>
+                    Streamlit Community Cloud や自前のサーバー（VPSなど）にデプロイすることで、<br>
+                    URL を共有するだけで、友人・チームメンバー・クライアントに使ってもらえます。
+                </li>
+                <li>
+                    🖥️ <span class="highlight">ローカルネットワーク上で動作するアプリ</span><br>
+                    自分のPCや、社内LAN上のサーバーでアプリを起動し、<br>
+                    同じネットワーク内の端末からだけアクセスできる形で運用します。<br>
+                    社内向けツールや、外部に公開したくないプロトタイプに向いています。
+                </li>
+            </ul>
+            <p style="margin-top: 12px; font-size: 1.05em;">
+                ⚙️ 今日のゴールはあくまで「プロトタイプを動かす」ところまで。<br>
+                公開方法は、用途やセキュリティ要件に応じて後から選べばOKです。
+            </p>
+        </section>
+
         <!-- 9: 最小構成設計の考え方 -->
         <section class="slide">
             <h2 class="chapter-title">画面・データの最小構成設計（15分）</h2>
@@ -309,47 +333,13 @@
             </ul>
         </section>
 
-        <!-- 10: Streamlitの基本（復習） -->
-        <section class="slide">
-            <h2 class="chapter-title">Streamlitの基本（復習）</h2>
-            <p class="chapter-subtitle">最小構成の例</p>
-            <pre class="code-block">import streamlit as st
-
-st.title("アプリのタイトル")
-st.write("説明文")
-
-# 入力
-user_input = st.text_input("入力してください")
-button = st.button("実行")
-
-# 処理と出力
-if button:
-    result = f"入力された内容: {user_input}"
-    st.write(result)</pre>
-        </section>
-
-        <!-- 11: Streamlitの主要コンポーネント -->
-        <section class="slide">
-            <h2 class="chapter-title">Streamlitの主要コンポーネント</h2>
-            <ul class="content-list">
-                <li><span class="highlight">st.text_input()</span> - テキスト入力</li>
-                <li><span class="highlight">st.number_input()</span> - 数値入力</li>
-                <li><span class="highlight">st.selectbox()</span> - 選択ボックス</li>
-                <li><span class="highlight">st.button()</span> - ボタン</li>
-                <li><span class="highlight">st.file_uploader()</span> - ファイルアップロード</li>
-                <li><span class="highlight">st.dataframe()</span> - データフレーム表示</li>
-                <li><span class="highlight">st.line_chart()</span> - 折れ線グラフ</li>
-                <li><span class="highlight">st.bar_chart()</span> - 棒グラフ</li>
-            </ul>
-        </section>
-
-        <!-- 12: プロトタイピング（40分） -->
+        <!-- 10: プロトタイピング（40分） -->
         <section class="slide">
             <h2 class="chapter-title">Streamlitでプロトタイピング（40分）</h2>
             <p class="chapter-subtitle">実装タイム！</p>
             <ul class="content-list">
                 <li>各自、設計した最小構成を実装</li>
-                <li>生成AI（ChatGPT / Cursor）の利用もOK</li>
+                <li>生成AI（ChatGPT / Gemini等）の利用もOK</li>
                 <li>わからないことはSlackで質問</li>
                 <li>完璧を目指さず、<span class="highlight">動くもの</span>を優先</li>
                 <li>途中で詰まったら、他の人の進捗を見てみる</li>
