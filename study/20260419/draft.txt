@@ -1,0 +1,92 @@
+お題：セキュリティを考える:docchidemo-ii-nya:
+Anthropicのソースコード流出、Axiosに対してサプライチェーン攻撃など、何かとセキュリティが話題になる今日この頃、一度掘り下げてみたく、このお題で勉強会をしてみようと思います:ouen-nya:
+こんなことを扱う予定です :memo:
+
+pip のライブラリにも脆弱性はある → リポジトリと Snyk を連携しておく話（無料枠でもかなり使える／深刻度や修正 PR まで）
+バージョン固定（requirements など）と、サプライチェーンの話（新しく出たパッケージは少し様子を見る、Takumi Guard などの一例）
+APIキーを安全に使う（コードに書かない、環境変数・.env と gitignore、GitHub Secrets、漏れたらローテーションのイメージ）
+
+
+① 導入（10分）
+なぜセキュリティが必要か
+実際に起きる事故例
+APIキー漏洩
+SQLインジェクション
+GitHub公開事故
+
+👉「これ普通に自分もやるわ…」って思わせるのが勝ち
+
+② Python開発での“よくある事故”トップ5（30分）
+1. ハードコードされた秘密情報
+API_KEY = "sk-xxxx"
+
+→ GitHubに上げて即死
+
+2. SQLインジェクション
+query = f"SELECT * FROM users WHERE name = '{name}'"
+3. eval()の使用
+eval(user_input)
+4. pickleの危険性
+pickle.loads(data)
+5. requirements未管理
+古いライブラリ = 脆弱性そのまま
+
+
+cursor.execute("SELECT * FROM users WHERE name = %s", (name,))
+④ ツール紹介（20分）
+必須レベル
+依存関係チェック
+pip-audit
+safety
+静的解析
+bandit
+
+👉 ここで出るのがちょうど最近の話題
+→ Snykとかも軽く触れるといい
+
+⑤ まとめ（10分）
+
+👉 最低限これだけ守れ
+
+APIキーは環境変数
+SQLはプレースホルダ
+eval使うな
+requirements管理しろ
+
+Snyk はリポジトリと連携すると：
+
+依存ライブラリの脆弱性を自動検出
+PRごとにセキュリティチェック
+修正方法（バージョンアップ等）を提示
+SBOM的な可視化
+手順（GitHub連携）
+① Snykにログイン
+
+👉 https://app.snyk.io/
+
+GitHubアカウントでログインが一番楽
+② 「Integrations」からGitHubを選択
+「GitHub」をクリック
+アクセス許可を付与
+
+👉 ここでやること
+
+リポジトリへの読み取り権限
+（必要なら）PRチェック用の書き込み権限
+③ 対象リポジトリを選択
+「Add projects」→「GitHub」
+スキャンしたいリポジトリを選択
+④ スキャン実行
+依存関係を自動解析
+requirements.txt
+package.json
+Pipfile
+など
+⑤ 結果確認
+脆弱性一覧が出る
+重要度（Critical / High / Medium / Low）
+修正方法（例：バージョン上げろ）
+
+
+Takumi Guard導入
+https://shisho.dev/docs/ja/t/guard/quickstart/pypi

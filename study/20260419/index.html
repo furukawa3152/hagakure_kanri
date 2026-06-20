@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python勉強会 — セキュリティを考える</title>
+    <meta name="description" content="APIキー、入力の扱い、依存関係のセキュリティを扱う Python 勉強会用スライドです。">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0f172a;
+            --primary-hover: #1e293b;
+            --secondary-color: #475569;
+            --background-color: #f5f5f4;
+            --surface-color: #ffffff;
+            --text-primary: #1c1917;
+            --text-secondary: #57534e;
+            --accent-color: #15803d;
+            --code-bg: #1c1917;
+            --code-text: #e7e5e4;
+            --border-color: #d6d3d1;
+            --spacing-unit: 1.5rem;
+            --max-width: 1000px;
+            --slide-height: 750px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Noto Sans JP', 'Inter', sans-serif;
+            background-color: var(--background-color);
+            background-image: radial-gradient(#d6d3d1 1px, transparent 1px);
+            background-size: 20px 20px;
+            color: var(--text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            width: 100%;
+            max-width: var(--max-width);
+            height: var(--slide-height);
+            background-color: var(--surface-color);
+            border-radius: 8px;
+            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--border-color);
+        }
+
+        .slides-wrapper {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 3rem 4rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            transform: translateY(10px);
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+            z-index: 10;
+        }
+
+        .slide-content {
+            position: relative;
+            height: 100%;
+            padding-bottom: 2rem;
+            z-index: 1;
+        }
+
+        .char-img {
+            position: absolute;
+            bottom: 1rem;
+            right: 1rem;
+            width: 180px;
+            max-height: 250px;
+            object-fit: contain;
+            filter: drop-shadow(0 5px 10px rgb(0 0 0 / 0.1));
+            transition: transform 0.3s ease;
+            opacity: 0.8;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .char-img:hover {
+            transform: scale(1.08);
+            opacity: 1;
+        }
+
+        .char-img.char-img-high {
+            bottom: 12rem;
+        }
+
+        @media (max-width: 768px) {
+            .char-img.char-img-high {
+                bottom: 8rem;
+            }
+        }
+
+        .slide.title-slide {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0;
+            background-color: var(--surface-color);
+        }
+
+        .title-container {
+            padding: 2rem;
+            z-index: 2;
+        }
+
+        .title-slide h1 {
+            font-size: 3.2rem;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            border-bottom: 4px solid var(--accent-color);
+            padding-bottom: 1rem;
+            display: inline-block;
+        }
+
+        .title-slide p {
+            font-size: 1.4rem;
+            color: var(--text-secondary);
+        }
+
+        .title-footer {
+            position: absolute;
+            bottom: 2rem;
+            right: 3rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .title-footer::before {
+            content: '';
+            display: block;
+            width: 16px;
+            height: 16px;
+            background-color: var(--accent-color);
+            border-radius: 50%;
+        }
+
+        @media (max-width: 768px) {
+            .slide {
+                padding: 1.5rem;
+            }
+
+            .char-img {
+                width: 120px;
+                max-height: 150px;
+                opacity: 0.5;
+            }
+
+            .title-slide h1 {
+                font-size: 2.2rem;
+            }
+
+            :root {
+                --slide-height: 100vh;
+            }
+
+            .presentation-container {
+                height: 100vh;
+                border-radius: 0;
+                border: none;
+            }
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--accent-color);
+            padding-bottom: 0.5rem;
+            display: inline-block;
+        }
+
+        h3 {
+            font-size: 1.25rem;
+            margin: 1.5rem 0 0.75rem;
+            color: var(--text-primary);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        h3::before {
+            content: '';
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background-color: var(--accent-color);
+            transform: rotate(45deg);
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+        }
+
+        ul {
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+            color: var(--text-secondary);
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        .command-block {
+            background-color: var(--code-bg);
+            color: var(--code-text);
+            padding: 0.75rem 1rem;
+            border-radius: 4px;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            font-size: 0.85rem;
+            margin: 0.75rem 0;
+            overflow-x: auto;
+            border-left: 4px solid var(--accent-color);
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            white-space: pre;
+        }
+
+        .term-card {
+            background-color: #fafaf9;
+            border: 1px solid var(--border-color);
+            border-top: 4px solid var(--primary-color);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 4px;
+        }
+
+        .term-card strong {
+            display: block;
+            color: var(--primary-color);
+            margin-bottom: 0.25rem;
+            border-bottom: 1px dashed var(--border-color);
+            padding-bottom: 0.25rem;
+        }
+
+        .controls {
+            height: 80px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 3rem;
+            background-color: #fafaf9;
+            z-index: 20;
+        }
+
+        .btn {
+            background-color: white;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            font-family: inherit;
+            letter-spacing: 0.05em;
+        }
+
+        .btn:hover:not(:disabled) {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            background-color: #e5e5e5;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background-color: #334155;
+        }
+
+        .progress {
+            font-family: 'SFMono-Regular', monospace;
+            font-size: 1rem;
+            color: var(--text-secondary);
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="presentation-container">
+        <div class="slides-wrapper">
+
+            <!-- Slide 1: Title -->
+            <div class="slide active title-slide">
+                <div class="title-container">
+                    <h1>Python勉強会</h1>
+                    <p>セキュリティを考える</p>
+                </div>
+                <div class="title-footer">
+                    HAGAKURE PROGRAMMING塾
+                </div>
+            </div>
+
+            <!-- Slide 2: はじめに -->
+            <div class="slide">
+                <div class="slide-content"
+                    style="display: flex; flex-direction: column; justify-content: center; align-items: flex-start; text-align: left; padding: 3rem 4rem; padding-right: min(14rem, 22vw); max-width: 100%;">
+                    <h2>1. はじめに</h2>
+                    <div style="max-width: 820px; width: 100%;">
+                        <p>Anthropic のソースコード流出や、Axios に対するサプライチェーン攻撃など、セキュリティが話題になる今日この頃。一度、Python を題材に<strong>キー・入力・依存関係</strong>の観点で掘り下げます。</p>
+                        <p style="margin-bottom:0;">次のスライドでは、<strong>生成AIがコードを書いてくれること自体のリスク</strong>と、実行環境ごとのイメージを共有します。</p>
+                    </div>
+                    <img src="images/voice-samurai.png" alt="Samurai" class="char-img">
+                </div>
+            </div>
+
+            <!-- Slide 3: 生成AIと実行環境 -->
+            <div class="slide">
+                <div class="slide-content">
+                    <h2>2. 生成AIが書くコードをどう扱うか</h2>
+                    <div style="max-width: 820px;">
+                        <p>生成AIはコードを素早く出してくれますが、<strong>正しさや安全性は保証されません</strong>。「どこで動かすか」「何を信じるか」を意識しましょう。</p>
+
+                        <div class="term-card">
+                            <strong>実行環境によって、想定されるリスクは変わる</strong>
+                            <div style="border-left: 3px solid var(--accent-color); padding-left: 1rem; margin-top: 0.75rem;">
+                                <p style="margin-bottom: 0.35rem;"><strong>ローカルでのみ実行</strong> — 影響は主に自分のマシンに閉じる。ただし<strong>ゼロではない</strong></p>
+                                <p style="text-align: center; color: var(--secondary-color); margin: 0.25rem 0;">↓</p>
+                                <p style="margin-bottom: 0.35rem;"><strong>閉域ネットワーク上で実行</strong> — 社内・限定環境。漏洩や横展開の範囲が広がる</p>
+                                <p style="text-align: center; color: var(--secondary-color); margin: 0.25rem 0;">↓</p>
+                                <p style="margin-bottom: 0;"><strong>Web 上にデプロイ</strong> — 不特定多数・常時接続。<strong>攻撃面・影響が大きくなりやすい</strong></p>
+                            </div>
+                            <p style="margin-top:0.75rem; margin-bottom:0;">下に行くほど、想定外の損害が大きくなりやすい、というイメージです。</p>
+                        </div>
+
+                        <h3>ローカルでも気をつけること（例）</h3>
+                        <ul>
+                            <li>API キーや機密をコードに直書きしない（誤コミット・漏えい）</li>
+                            <li>コピペしたコードの <code>eval</code> やシェル実行を鵜呑みにしない</li>
+                            <li><code>pip install</code> するパッケージの名前・出所を軽く意識する</li>
+                        </ul>
+                    </div>
+                    <img src="images/machi-musume.png" alt="Character" class="char-img char-img-high">
+                </div>
+            </div>
+
+            <!-- Slide 4: 今日やること -->
+            <div class="slide">
+                <div class="slide-content"
+                    style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: left; padding: 3rem 4rem;">
+                    <h2>3. 今日やること</h2>
+                    <div style="max-width: 820px; width: 100%;">
+                        <p>この心構えを踏まえ、今日は次のトピックを扱います。</p>
+
+                        <h3>アジェンダ</h3>
+                        <ul>
+                            <li>API キーを安全に使う（プロジェクト単位・環境変数・ローテーション）</li>
+                            <li>ハンズオン①：環境変数から OpenAI API を呼ぶ</li>
+                            <li>入力とプロンプトインジェクションのイメージ</li>
+                            <li>ハンズオン②：<code>eval</code> の危険さを体感する（デモ用）</li>
+                            <li><code>requirements.txt</code> などで依存を書き出す意味・重要性</li>
+                            <li>pip と Snyk、バージョン固定とサプライチェーン（Takumi Guard の一例）</li>
+                        </ul>
+
+                        <div
+                            style="background-color: #fff7ed; border: 2px solid #fb923c; border-radius: 8px; padding: 1.5rem; margin: 2rem 0;">
+                            <h3
+                                style="font-size: 1.3rem; margin-bottom: 1rem; color: var(--primary-color); border: none; padding: 0; display: block;">
+                                📡 オンライン接続の確認
+                            </h3>
+                            <div
+                                style="display: flex; gap: 2rem; justify-content: center; margin-top: 1.5rem; flex-wrap: wrap;">
+                                <div style="flex: 1; min-width: 200px; text-align:center;">
+                                    <div
+                                        style="font-size: 1.1rem; font-weight: 600; color: var(--primary-color); margin-bottom: 0.5rem;">
+                                        画面は見えていますか？
+                                    </div>
+                                </div>
+                                <div style="flex: 1; min-width: 200px; text-align:center;">
+                                    <div
+                                        style="font-size: 1.1rem; font-weight: 600; color: var(--primary-color); margin-bottom: 0.5rem;">
+                                        音声は聞こえていますか？
+                                    </div>
+                                </div>
+                            </div>
+                            <p
+                                style="font-size: 0.95rem; color: var(--text-secondary); margin-top: 1.5rem; margin-bottom: 0; text-align:center;">
+                                問題がある場合は、Slackのチャットでお知らせください。
+                            </p>
+                        </div>
+                    </div>
+                    <img src="images/voice-ninja1.png" alt="Ninja" class="char-img char-img-high">
+                </div>
+            </div>
+
+            <!-- Slide 5: APIキー -->
+            <div class="slide">
+                <div class="slide-content">
+                    <h2>4. APIキーを安全に使う</h2>
+                    <div style="max-width: 820px;">
+                        <p>キーは<strong>漏れる前提</strong>で制限・監視の設計を考えます。コードに直書きせず、環境変数や <code>.env</code>（<code>.gitignore</code> に含める）、CI では GitHub Secrets などで渡します。</p>
+
+                        <div class="term-card">
+                            <strong>運用のポイント</strong>
+                            <ul>
+                                <li><strong>プロジェクト（用途）ごとにキーを作る</strong> — 影響範囲を分け、失効・ローテーションしやすくする</li>
+                                <li>コードに書かない — 環境変数から読む（例：<code>os.environ["API_KEY"]</code>）</li>
+                                <li><code>.env</code> と <code>.gitignore</code>、リポジトリには載せない</li>
+                                <li>GitHub Actions などでは Secrets に登録して参照</li>
+                                <li>漏れたら<strong>ローテーション</strong>（無効化 → 新キー発行）の手順を決めておく</li>
+                            </ul>
+                        </div>
+
+                        <div class="term-card" style="background-color:#fef2f2; border-top-color:#b91c1c;">
+                            <strong>やってはいけないこと</strong>
+                            <ul>
+                                <li>API キーを Git にプッシュする</li>
+                                <li>スクリーンショットやチャットでキーをそのまま共有する</li>
+                            </ul>
+                            <p style="margin-bottom:0;">プロバイダ側でキーに<strong>最小権限</strong>（使う API だけ）を付けられる場合は、それに合わせましょう。</p>
+                        </div>
+                    </div>
+                    <img src="images/machi-musume.png" alt="Character" class="char-img char-img-high">
+                </div>
+            </div>
+
+            <!-- Slide 6: ハンズオン1 -->
+            <div class="slide">
+                <div class="slide-content">
+                    <h2>5. ハンズオン① — 環境変数から OpenAI を呼ぶ</h2>
+                    <div style="max-width: 820px;">
+                        <p>事前に <code>pip install openai</code> を実行し、環境変数 <code>API_KEY</code> を設定してから動かします。</p>
+
+                        <div class="command-block">import os
+from openai import OpenAI
+
+# APIキー利用の注意点
+# 漏れる前提で制御する（制限・監視）
+# コードに書かない=環境変数に入れる。
+# 最小権限にする（このコードなら、Responses=WriteのみでOK。）
+OPENAI_API_KEY = os.environ["API_KEY"]
+client = OpenAI(api_key=OPENAI_API_KEY)
+
+input_text = input("質問を入れてね：")
+
+
+response = client.responses.create(
+    model="gpt-5.4-mini",
+    input=input_text
+)
+
+print(response.output_text)</div>
+                    </div>
+                    <img src="images/voice-ninja1.png" alt="Ninja" class="char-img">
+                </div>
+            </div>
+
+            <!-- Slide 7: プロンプトインジェクション -->
+            <div class="slide">
+                <div class="slide-content">
+                    <h2>6. 入力フォームは攻撃される前提</h2>
+                    <div style="max-width: 820px;">
+                        <p>Web のフォームや <code>input()</code> で受け取った文字列は、<strong>信頼しない</strong>のが基本です。LLM アプリでは、ユーザー入力がシステム側の指示をねじる攻撃を<strong>プロンプトインジェクション</strong>と呼びます。</p>
+
+                        <div class="term-card">
+                            <strong>イメージ</strong>
+                            <ul>
+                                <li>「前の指示は忘れて…」のように、モデルの振る舞いを意図的に変えさせる</li>
+                                <li>機密を吐かせる・別のツールを悪用する、などにつながりうる</li>
+                            </ul>
+                            <p style="margin-bottom:0;">対策は一発ではありませんが、入力の検証・役割の分離・テンプレート化など、<strong>設計として意識する</strong>ことが第一歩です。</p>
+                        </div>
+                    </div>
+                    <img src="images/voice-ninja2.png" alt="Ninja" class="char-img">
+                </div>
+            </div>
+
+            <!-- Slide 8: ハンズオン2 eval -->
+            <div class="slide">
+                <div class="slide-content">
+                    <h2>7. ハンズオン② — <code>eval</code> の危険さ（デモ）</h2>
+                    <div style="max-width: 820px;">
+                        <p>ユーザー入力を <code>eval</code> に渡すと、任意の Python 式が実行されます。<strong>実運用では使いません。</strong>ローカルで挙動だけ確認する想定です。</p>
+
+                        <div class="command-block">input_text = input("質問を入れてね：")
+eval(input_text)
+
+# 例として eval に渡すと危険が分かる入力のイメージ:
+# [print(i) for i in range(1,11)]
+# print(os.environ)</div>
+
+                        <div class="term-card" style="background-color:#fef2f2; border-top-color:#b91c1c;">
+                            <strong>なぜ危ないか</strong>
+                            <ul style="margin-bottom:0;">
+                                <li><code>eval</code> は式評価であり、悪意のある入力で処理系そのものが乗っ取られる</li>
+                                <li>環境変数の読み取りなども、入力次第で可能になりうる</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <img src="images/voice-samurai.png" alt="Samurai" class="char-img" style="transform: scaleX(-1);">
+                </div>
+            </div>
+
+            <!-- Slide 9: requirements の意味 -->
+            <div class="slide">
+                <div class="slide-content">
+                    <h2>8. <code>requirements</code> で依存を管理する意味</h2>
+                    <div style="max-width: 820px;">
+                        <p>手元で <code>pip install パッケージ</code> するだけでは、「いつ・誰が・どのバージョンを入れたか」がプロジェクトに残りません。<strong><code>requirements.txt</code></strong>（や <code>poetry.lock</code> / <code>uv.lock</code> など）に依存関係を<strong>書き出して共有する</strong>ことで、チームと CI・本番が同じ前提を持てます。</p>
+
+                        <div class="term-card">
+                            <strong>なぜ重要か</strong>
+                            <ul>
+                                <li><strong>再現性</strong> — 環境ごとにバージョンがバラつかず、「自分の手元では動いた」の調査がしやすい</li>
+                                <li><strong>見える化</strong> — プロジェクトがどの外部コードに依存しているかが一覧になる</li>
+                                <li><strong>セキュリティ対応</strong> — CVE のニュースが出たとき「自分たちは影響あるか」を判断しやすい。スキャナや監査の<strong>前提</strong>にもなる</li>
+                            </ul>
+                        </div>
+
+                        <p style="margin-bottom:0.5rem;">次のスライド以降は、この「一覧」をどう保護・点検するか（Snyk、バージョン固定、プロキシなど）につながります。</p>
+                    </div>
+                    <img src="images/machi-musume.png" alt="Character" class="char-img char-img-high">
+                </div>
+            </div>
+
+            <!-- Slide 10: Snyk -->
+            <div class="slide">
+                <div class="slide-content">
+                    <h2>9. pip のライブラリと Snyk</h2>
+                    <div style="max-width: 820px;">
+                        <p>PyPI のパッケージにも脆弱性はあります。リポジトリと <strong>Snyk</strong> を連携しておくと、無料枠でも深刻度の把握や修正 PR まで進めやすくなります。</p>
+
+                        <div class="term-card">
+                            <strong>Snyk</strong>
+                            <ul>
+                                <li><a href="https://app.snyk.io/" target="_blank" rel="noreferrer">https://app.snyk.io/</a></li>
+                                <li>依存関係のスキャン、GitHub 等との連携が主な入口</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <img src="images/voice-ninja2.png" alt="Ninja" class="char-img char-img-high">
+                </div>
+            </div>
+
+            <!-- Slide 11: サプライチェーン -->
+            <div class="slide">
+                <div class="slide-content">
+                    <h2>10. バージョン固定とサプライチェーン</h2>
+                    <div style="max-width: 820px;">
+                        <p>先ほどのように依存をファイルに書いたうえで、<strong>バージョンを固定</strong>（ピン留め）すると、意図しない更新や「いつの間にか変わった挙動」を抑えられます。新しく出たパッケージは少し様子を見る、という姿勢も有効です。</p>
+
+                        <div class="term-card">
+                            <strong>Takumi Guard（一例）</strong>
+                            <ul>
+                                <li>サプライチェーンまわりの検知・可視化のツールの例として紹介</li>
+                                <li><a href="https://shisho.dev/docs/ja/r/202603-takumi-guard-pypi/" target="_blank" rel="noreferrer">https://shisho.dev/docs/ja/r/202603-takumi-guard-pypi/</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <img src="images/voice-ninja1.png" alt="Ninja" class="char-img">
+                </div>
+            </div>
+
+            <!-- Slide 12: まとめ -->
+            <div class="slide">
+                <div class="slide-content"
+                    style="display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;">
+                    <h2 style="border:none; margin-bottom:2rem;">11. まとめ &amp; 次の一歩</h2>
+                    <p style="font-size:1.2rem; max-width:820px; margin-bottom:2rem;">
+                        今日は<strong>生成AIのコードの扱いと実行環境のイメージ</strong>を共有したうえで、<strong>APIキー（プロジェクト単位・環境変数・ローテーション）→ 入力とプロンプトインジェクション → eval の危険性 → 依存の明示（requirements）→ Snyk とバージョン固定・サプライチェーン</strong>を扱いました。
+                    </p>
+                    <ul style="text-align:left; max-width:700px;">
+                        <li>キーはコードに書かず、漏れたら止めて作り直す前提で運用する</li>
+                        <li>ユーザー入力は信頼しない（LLM ではプロンプトインジェクションも意識する）</li>
+                        <li><code>eval</code> のような「全部実行」系は実装に使わない</li>
+                        <li>依存は <code>requirements</code> などで明示し、固定・スキャン・新規パッケージは慎重に</li>
+                        <li>デプロイほど影響が大きくなりやすいが、ローカルでもキー・コピペ・依存に注意する</li>
+                    </ul>
+                    <p style="margin-top:2rem; font-size:1.1rem;">質問や「うちのプロジェクトだとこうかも」があれば、時間の範囲で共有しましょう。</p>
+                    <img src="images/logo.png" alt="HAGAKURE Logo" style="max-height:120px; margin-top:2rem;">
+                </div>
+            </div>
+
+        </div>
+
+        <div class="controls">
+            <button id="prevBtn" class="btn">← 前へ</button>
+            <span class="progress" id="slideProgress">1 / 12</span>
+            <button id="nextBtn" class="btn btn-primary">次へ →</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const slides = document.querySelectorAll('.slide');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const progressDisplay = document.getElementById('slideProgress');
+
+            let currentSlide = 0;
+            const totalSlides = slides.length;
+
+            function updateSlide() {
+                slides.forEach((slide, index) => {
+                    if (index === currentSlide) {
+                        slide.classList.add('active');
+                    } else {
+                        slide.classList.remove('active');
+                    }
+                });
+
+                progressDisplay.textContent = `${currentSlide + 1} / ${totalSlides}`;
+
+                prevBtn.disabled = currentSlide === 0;
+
+                if (currentSlide === totalSlides - 1) {
+                    nextBtn.textContent = '完了';
+                    nextBtn.classList.remove('btn-primary');
+                } else {
+                    nextBtn.textContent = '次へ →';
+                    nextBtn.classList.add('btn-primary');
+                }
+            }
+
+            function goToNext() {
+                if (currentSlide < totalSlides - 1) {
+                    currentSlide++;
+                    updateSlide();
+                }
+            }
+
+            function goToPrev() {
+                if (currentSlide > 0) {
+                    currentSlide--;
+                    updateSlide();
+                }
+            }
+
+            nextBtn.addEventListener('click', goToNext);
+            prevBtn.addEventListener('click', goToPrev);
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight' || e.key === 'Enter' || e.key === ' ') {
+                    goToNext();
+                } else if (e.key === 'ArrowLeft') {
+                    goToPrev();
+                }
+            });
+
+            updateSlide();
+        });
+    </script>
+</body>
+
+</html>

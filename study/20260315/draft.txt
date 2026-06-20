@@ -1,0 +1,107 @@
+1. はじめに
+今日やること 
+Google AI StudioのAPIをPythonから実行 
+Streamlit でフロントを用意して、議事録作成アプリを作成
+時間があれば各自のアイデアを少しだけ形にしてみる
+
+2.APIキーの作成
+https://aistudio.google.com/api-keys
+から APIキーを作成. 
+
+絶対にやってはならないこと
+・APIキーをGitにプッシュする
+
+3.PythonでAPIを呼び出してみる。
+まずは仮想環境を作成。 
+https://ai.google.dev/gemini-api/docs/quickstart?hl=jaを参考に. 
+
+Google GenAI SDK をインストールする
+　pip install -q -U google-genai
+
+以下のコード を実行 
+from google import genai
+
+# 直書き（非推奨）
+ client = genai.Client(api_key="")
+
+ response = client.models.generate_content(
+     model="gemini-3-flash-preview", contents="あなたは誰？"
+ )
+ print(response.text)
+
+4.画像を読み込ませてみる
+画像 を読むためのライブラリを追加。 
+pip install pillow
+
+以下のコード を実行
+
+ from PIL import Image
+ from google import genai
+
+  client = genai.Client(api_key="")
+
+ image = Image.open("画像パス")
+ response = client.models.generate_content(
+     model="gemini-3-flash-preview",
+     contents=[image, "画像について説明して"]
+ )
+ print(response.text)
+
+ 5.音声を読み込ませてみる
+
+from google import genai
+
+client = genai.Client()
+
+myfile = client.files.upload(file="音声ファイルパス")
+
+response = client.models.generate_content(
+    model="gemini-3.1-flash-preview", contents=["日本語で文字起こしして", myfile]
+)
+
+print(response.text)
+
+6.Streamlitでアプリケーション化してみる
+
+import streamlit as st
+from google import genai
+from google.genai.types import Part
+
+st.title("Gemini 音声文字起こし")
+
+# APIキー
+api_key = st.sidebar.text_input("API Key", type="password")
+
+uploaded_file = st.file_uploader("音声ファイルをアップロード", type=["mp3","wav","m4a"])
+
+if api_key and uploaded_file:
+
+    client = genai.Client(api_key=api_key)
+
+    with st.spinner("文字起こし中..."):
+
+        # 拡張子取得
+        suffix = uploaded_file.name.split(".")[-1]
+        temp_filename = f"temp_audio.{suffix}"
+
+        # 一時保存
+        with open(temp_filename, "wb") as f:
+            f.write(uploaded_file.read())
+
+        # Geminiにアップロード
+        myfile = client.files.upload(file=temp_filename)
+
+        # 文字起こし
+        response = client.models.generate_content(
+            model="gemini-3-flash-preview",
+            contents=[
+                "日本語で正確に文字起こししてください",
+                Part.from_uri(
+                    file_uri=myfile.uri,
+                    mime_type=myfile.mime_type
+                )
+            ]
+        )
+
+    st.subheader("結果")
+    st.write(response.text)
