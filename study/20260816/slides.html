@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HAGAKUREプログラミング塾 2026年8月勉強会｜ループエンジニアリング入門</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #1e2a3a;
+      --muted: #5b6b7c;
+      --line: #d7e0ea;
+      --paper: #f7f4ee;
+      --card: #ffffff;
+      --indigo: #243b66;
+      --teal: #2a9d8f;
+      --teal-soft: #e6f5f2;
+      --coral: #c45c4a;
+      --coral-soft: #f8ebe8;
+      --shadow: 0 12px 32px rgba(30, 42, 58, 0.10);
+      --slide-h: 850px;
+      --slide-w: min(1280px, 96vw);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Zen Kaku Gothic New", "Hiragino Sans", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(ellipse at top, #e8eef6 0%, transparent 55%),
+        linear-gradient(160deg, #eef2f7 0%, #e7ebe4 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      padding: 16px;
+    }
+
+    .deck {
+      width: var(--slide-w);
+      height: var(--slide-h);
+      max-height: 850px;
+      background: var(--card);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      position: relative;
+      border: 1px solid rgba(36, 59, 102, 0.08);
+    }
+
+    .slides {
+      height: 100%;
+      position: relative;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      padding: 36px 48px 56px;
+      display: none;
+      flex-direction: column;
+      opacity: 0;
+      transform: translateX(24px);
+      transition: opacity 0.28s ease, transform 0.28s ease;
+      background:
+        linear-gradient(180deg, rgba(247, 244, 238, 0.65) 0%, rgba(255, 255, 255, 0.9) 28%, #fff 100%);
+    }
+
+    .slide.active {
+      display: flex;
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .slide.exit-left {
+      display: flex;
+      opacity: 0;
+      transform: translateX(-24px);
+    }
+
+    .eyebrow {
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      color: var(--teal);
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    h1, h2, h3 {
+      font-family: "Shippori Mincho", serif;
+      font-weight: 700;
+      line-height: 1.35;
+      color: var(--indigo);
+    }
+
+    h1 { font-size: clamp(28px, 3.2vw, 42px); }
+    h2 { font-size: clamp(24px, 2.6vw, 34px); margin-bottom: 18px; }
+    h3 { font-size: 20px; margin-bottom: 10px; }
+
+    p, li {
+      font-size: 18px;
+      line-height: 1.7;
+      color: var(--ink);
+    }
+
+    .lead {
+      font-size: 20px;
+      color: var(--muted);
+      max-width: 42em;
+    }
+
+    .quote {
+      margin-top: 18px;
+      padding: 16px 20px;
+      border-left: 4px solid var(--teal);
+      background: var(--teal-soft);
+      border-radius: 0 12px 12px 0;
+      font-family: "Shippori Mincho", serif;
+      font-size: 20px;
+      color: var(--indigo);
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 24px;
+      align-items: center;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .grid-2.swap { grid-template-columns: 0.95fr 1.05fr; }
+    .grid-2.equal { grid-template-columns: 1fr 1fr; }
+
+    .stack {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-height: 0;
+    }
+
+    .figure {
+      height: 100%;
+      min-height: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--paper);
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      overflow: hidden;
+      padding: 10px;
+    }
+
+    .figure img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    /* 横長挿絵（16:9）を主役にするレイアウト */
+    .visual-slide {
+      gap: 12px;
+    }
+
+    .visual-head {
+      display: grid;
+      grid-template-columns: minmax(220px, 0.9fr) minmax(280px, 1.1fr);
+      gap: 16px 24px;
+      align-items: end;
+      flex-shrink: 0;
+    }
+
+    .visual-head h2 {
+      margin-bottom: 0;
+    }
+
+    .visual-head .keys {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .visual-head .keys .pill {
+      font-size: 13px;
+    }
+
+    .figure.wide {
+      flex: 1;
+      width: 100%;
+      min-height: 0;
+      padding: 8px;
+      background: #fff;
+    }
+
+    .figure.wide img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center;
+    }
+
+    .quote.compact {
+      margin-top: 0;
+      padding: 12px 16px;
+      font-size: 17px;
+      flex-shrink: 0;
+    }
+
+    .mascot {
+      width: 140px;
+      height: auto;
+      object-fit: contain;
+    }
+
+    .mascot.lg { width: 180px; }
+
+    ul.clean {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    ul.clean li {
+      padding-left: 28px;
+      position: relative;
+    }
+
+    ul.clean li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.55em;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--teal);
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    .cards.three { grid-template-columns: repeat(3, 1fr); }
+    .cards.four { grid-template-columns: repeat(4, 1fr); }
+
+    .card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px 18px;
+      box-shadow: 0 4px 14px rgba(30, 42, 58, 0.04);
+    }
+
+    .card .label {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: var(--teal);
+      margin-bottom: 6px;
+    }
+
+    .card strong {
+      display: block;
+      font-family: "Shippori Mincho", serif;
+      font-size: 18px;
+      color: var(--indigo);
+      margin-bottom: 6px;
+    }
+
+    .card p {
+      font-size: 15px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: var(--teal-soft);
+      color: var(--indigo);
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .pill.warn {
+      background: var(--coral-soft);
+      color: var(--coral);
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 15px;
+    }
+
+    .table th,
+    .table td {
+      border: 1px solid var(--line);
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .table th {
+      background: #f0f4f8;
+      color: var(--indigo);
+      font-weight: 700;
+    }
+
+    .flow {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .flow .step {
+      background: var(--indigo);
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .flow .arrow {
+      color: var(--teal);
+      font-weight: 700;
+    }
+
+    .title-slide {
+      justify-content: center;
+      align-items: stretch;
+      text-align: left;
+    }
+
+    .title-slide .hero {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 28px;
+      align-items: center;
+      flex: 1;
+    }
+
+    .brand {
+      font-size: 14px;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    .meta {
+      margin-top: 22px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 18px;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .note {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: auto;
+      padding-top: 12px;
+    }
+
+    .compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .compare .panel {
+      border-radius: 14px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      min-height: 220px;
+    }
+
+    .compare .panel.in {
+      background: linear-gradient(180deg, #eef6ff, #fff);
+    }
+
+    .compare .panel.on {
+      background: linear-gradient(180deg, var(--teal-soft), #fff);
+    }
+
+    .compare .panel h3 {
+      font-size: 18px;
+    }
+
+    .worksheet {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .worksheet .box {
+      border: 1px dashed #9eb0c2;
+      border-radius: 12px;
+      padding: 14px;
+      min-height: 84px;
+      background: #fff;
+    }
+
+    .worksheet .box span {
+      display: block;
+      font-size: 13px;
+      color: var(--teal);
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .footer-bar {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      background: rgba(255, 255, 255, 0.92);
+      border-top: 1px solid var(--line);
+      font-size: 13px;
+      color: var(--muted);
+      z-index: 5;
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .controls button {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--indigo);
+      border-radius: 999px;
+      padding: 8px 14px;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(30, 42, 58, 0.06);
+    }
+
+    .controls button:hover { border-color: var(--teal); color: var(--teal); }
+    .controls button:disabled { opacity: 0.4; cursor: default; }
+
+    .pager {
+      min-width: 72px;
+      text-align: center;
+      font-variant-numeric: tabular-nums;
+      font-weight: 700;
+      color: var(--indigo);
+    }
+
+    .dots {
+      display: flex;
+      gap: 6px;
+      max-width: 420px;
+      overflow: hidden;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .dots button {
+      width: 8px;
+      height: 8px;
+      padding: 0;
+      border-radius: 50%;
+      border: none;
+      background: #c5d0dc;
+      cursor: pointer;
+    }
+
+    .dots button.active { background: var(--teal); transform: scale(1.25); }
+
+    .help {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    @media (max-width: 980px) {
+      body { padding: 8px; justify-content: flex-start; }
+      .deck { height: min(850px, calc(100vh - 90px)); }
+      .slide { padding: 24px 22px 52px; }
+      .grid-2, .title-slide .hero, .compare, .cards.four, .cards.three,
+      .visual-head {
+        grid-template-columns: 1fr;
+      }
+      .visual-head .keys { justify-content: flex-start; }
+      .figure:not(.wide) { max-height: 280px; }
+      p, li { font-size: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="deck" id="deck" aria-live="polite">
+    <div class="slides" id="slides">
+
+      <!-- 1 -->
+      <section class="slide title-slide active" data-title="表紙">
+        <div class="hero">
+          <div class="stack">
+            <p class="brand">HAGAKUREプログラミング塾 ／ 2026年8月勉強会</p>
+            <h1>ループエンジニアリング入門</h1>
+            <p class="lead" style="margin-top:12px;">AI時代の仕事は「作る」より「回す」</p>
+            <p class="quote">良いプロンプトを書く人になるのではなく、<br>良いループを設計する人になる</p>
+            <div class="meta">
+              <span>2026年8月16日（日）21:30〜</span>
+              <span>オンライン（ZOOM）</span>
+              <span>約80〜90分</span>
+            </div>
+          </div>
+          <div class="figure" style="background:transparent;border:none;box-shadow:none;">
+            <img class="mascot lg" src="images/voice-samurai-02-wave.png" alt="HAGAKURE君">
+          </div>
+        </div>
+      </section>
+
+      <!-- 2 -->
+      <section class="slide" data-title="今日のゴール">
+        <p class="eyebrow">OPENING</p>
+        <h2>今日のゴール</h2>
+        <div class="grid-2 equal">
+          <div class="stack">
+            <ul class="clean">
+              <li>「AIに頼む人」から「ループを設計する人」へ視点を上げる</li>
+              <li>前半は考え方、後半は Cursor＋Slack 題材のデモ</li>
+              <li>手を動かさなくてもOK／途中で口を挟んでOK</li>
+              <li>デモは時間内に行けるところまでで十分</li>
+            </ul>
+            <div class="quote">いきなり全部自動化しなくていい。<br>まずは「見て、評価して、次を変える」ところから。</div>
+          </div>
+          <div class="stack" style="align-items:center;justify-content:center;gap:18px;">
+            <img class="mascot" src="images/voice-samurai-01-idle.png" alt="HAGAKURE君">
+            <div class="cards" style="width:100%;grid-template-columns:1fr;">
+              <div class="card">
+                <div class="label">今日の練習</div>
+                <strong>Human in the Loop</strong>
+                <p>ループの中で、評価と改善を自分で回す</p>
+              </div>
+              <div class="card">
+                <div class="label">目指す景色</div>
+                <strong>Human on the Loop</strong>
+                <p>慣れたら、少しずつ監督側へ移っていく</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3 -->
+      <section class="slide" data-title="問い">
+        <p class="eyebrow">QUESTION</p>
+        <h2>最初の問い</h2>
+        <div class="grid-2">
+          <div class="stack" style="justify-content:center;">
+            <div class="card" style="padding:28px;">
+              <h3 style="font-size:28px;margin-bottom:18px;">あなたはAIを使っていますか？</h3>
+              <h3 style="font-size:28px;color:var(--teal);">それとも、AIに仕事を渡し続けていますか？</h3>
+            </div>
+            <p class="lead">「使う」と「回し続ける」は、少し違います。</p>
+          </div>
+          <div class="figure" style="background:transparent;border:none;">
+            <img class="mascot lg" src="images/voice-samurai-05-thinking.png" alt="考え中のHAGAKURE君">
+          </div>
+        </div>
+      </section>
+
+      <!-- 4 -->
+      <section class="slide visual-slide" data-title="線から円へ">
+        <div class="visual-head">
+          <div>
+            <p class="eyebrow">WHY LOOP</p>
+            <h2>なぜ今「ループ」なのか</h2>
+          </div>
+          <div class="keys">
+            <span class="pill">昔：線（作って終わり）</span>
+            <span class="pill">今：円（評価して改善）</span>
+            <span class="pill">回し方が変わる</span>
+          </div>
+        </div>
+        <div class="figure wide">
+          <img src="images/01_line_to_circle_hagakure.png" alt="仕事は線から円へ">
+        </div>
+        <div class="quote compact">実は全部ループ。AI特有の話ではなく、仕事・学習・生活の共通構造。</div>
+      </section>
+
+      <!-- 5 -->
+      <section class="slide" data-title="身近な例">
+        <p class="eyebrow">EXAMPLES</p>
+        <h2>身近にも、職場にもループがある</h2>
+        <div class="cards three" style="margin-top:8px;">
+          <div class="card">
+            <div class="label">導入例</div>
+            <strong>料理</strong>
+            <p>作る → 食べる → 感想 → レシピ変更 → また作る</p>
+          </div>
+          <div class="card">
+            <div class="label">職場例 1</div>
+            <strong>医療・事務</strong>
+            <p>AIに手伝ってもらう → 人が確認 → 指摘を次の依頼へ反映</p>
+          </div>
+          <div class="card">
+            <div class="label">職場例 2</div>
+            <strong>学習・発信</strong>
+            <p>書く → 公開 → 反応を見る → 次の書き方を変える</p>
+          </div>
+        </div>
+        <div class="quote" style="margin-top:auto;">共通しているのは「結果を見て、次を変える」こと。</div>
+      </section>
+
+      <!-- 6 -->
+      <section class="slide visual-slide" data-title="良いループ悪いループ">
+        <div class="visual-head">
+          <div>
+            <p class="eyebrow">GOOD / BAD</p>
+            <h2>良いループと悪いループ</h2>
+          </div>
+          <div class="keys">
+            <span class="pill warn">悪い：やる → 終わる</span>
+            <span class="pill">良い：見る → 考える → 変える</span>
+          </div>
+        </div>
+        <div class="figure wide">
+          <img src="images/02_good_bad_loop_hagakure.png" alt="良いループと悪いループ">
+        </div>
+        <div class="quote compact">弱いのは実行より、評価と改善。</div>
+      </section>
+
+      <!-- 7 -->
+      <section class="slide" data-title="ガチャからループへ">
+        <p class="eyebrow">INSIGHT</p>
+        <h2>AIでも、評価がないとガチャになる</h2>
+        <div class="grid-2">
+          <div class="stack">
+            <ul class="clean">
+              <li>多くの人が弱いのは「実行」ではなく「評価」と「改善」</li>
+              <li>AIに頼んでも、チェックがなければ当たり待ち</li>
+              <li>「なんとなく良さそう」で終わると、次に活きない</li>
+            </ul>
+            <div class="pill-row">
+              <span class="pill warn">神プロンプト待ち</span>
+              <span class="pill">依頼 → 評価 → 次に反映</span>
+            </div>
+            <div class="quote">普段AIに頼んだあと、<br>結果をどうチェックしていますか？</div>
+          </div>
+          <div class="figure" style="background:transparent;border:none;">
+            <img class="mascot lg" src="images/voice-samurai-04-surprised.png" alt="驚くHAGAKURE君">
+          </div>
+        </div>
+      </section>
+
+      <!-- 8 -->
+      <section class="slide visual-slide" data-title="4段階">
+        <div class="visual-head">
+          <div>
+            <p class="eyebrow">FRAMEWORK</p>
+            <h2>AI活用の4段階</h2>
+          </div>
+          <div class="keys">
+            <span class="pill">Prompt</span>
+            <span class="pill">Context</span>
+            <span class="pill">Harness</span>
+            <span class="pill">Loop</span>
+          </div>
+        </div>
+        <div class="figure wide">
+          <img src="images/03_four_stages_rings_hagakure.png" alt="AI活用の4段階">
+        </div>
+        <div class="quote compact">紹介動画の枠組みを根拠に共有します。設計の対象が、外側へ広がっていく。</div>
+      </section>
+
+      <!-- 9 -->
+      <section class="slide" data-title="Prompt">
+        <p class="eyebrow">① PROMPT</p>
+        <h2>Prompt：指示の設計</h2>
+        <div class="cards" style="margin-top:8px;">
+          <div class="card">
+            <div class="label">設計するもの</div>
+            <strong>頼み方</strong>
+            <p>どう頼めば良い回答が出るか</p>
+          </div>
+          <div class="card">
+            <div class="label">日常例</div>
+            <strong>「要約して」「初学者向けに」</strong>
+            <p>いちばん馴染みのある段階</p>
+          </div>
+        </div>
+        <ul class="clean" style="margin-top:18px;">
+          <li>悪いわけではない</li>
+          <li>問題は「AI活用＝プロンプト」で思考が止まってしまうこと</li>
+        </ul>
+        <div class="quote">神プロンプトを作ることより、<br>次の外側（Context）を見に行く。</div>
+      </section>
+
+      <!-- 10 -->
+      <section class="slide" data-title="Context">
+        <p class="eyebrow">② CONTEXT</p>
+        <h2>Context：情報の設計</h2>
+        <div class="grid-2 equal">
+          <div class="card">
+            <div class="label">プロンプトだけ</div>
+            <strong>「この文章を直して」</strong>
+            <p>毎回ゼロから説明することになりやすい</p>
+          </div>
+          <div class="card">
+            <div class="label">Context付き</div>
+            <strong>読者・口調・前回指摘を渡す</strong>
+            <p>例：対象は塾生初学者。丁寧だが堅すぎない。前回指摘は〇〇</p>
+          </div>
+        </div>
+        <ul class="clean" style="margin-top:18px;">
+          <li>頼み方より「何を知っている必要があるか」</li>
+          <li>毎回同じ説明を貼っている人は、Contextが毎回消えている</li>
+        </ul>
+        <div class="quote">今回いちばん日常に効くのが、ここ。</div>
+      </section>
+
+      <!-- 11 -->
+      <section class="slide" data-title="Harness">
+        <p class="eyebrow">③ HARNESS</p>
+        <h2>Harness：お願いではなく仕組み</h2>
+        <div class="compare">
+          <div class="panel in">
+            <h3>Prompt（お願い）</h3>
+            <p>「必ずテストしてください」</p>
+            <p style="margin-top:10px;color:var(--muted);">守る保証がない</p>
+          </div>
+          <div class="panel on">
+            <h3>Harness（仕組み）</h3>
+            <p>「テスト合格しないと次へ進めない」</p>
+            <p style="margin-top:10px;color:var(--muted);">守らせる条件を先に置く</p>
+          </div>
+        </div>
+        <div class="pill-row" style="margin-top:16px;">
+          <span class="pill">出力形式を固定</span>
+          <span class="pill">わからない時はわからないと言う</span>
+          <span class="pill">重要判断は人間確認</span>
+          <span class="pill">秘密情報は貼らない</span>
+        </div>
+        <div class="quote">AIにお願いするのではなく、<br>守らせる条件を先に置く。</div>
+      </section>
+
+      <!-- 12 -->
+      <section class="slide" data-title="Loop">
+        <p class="eyebrow">④ LOOP</p>
+        <h2>Loop：回し続ける設計</h2>
+        <div class="grid-2">
+          <div class="stack">
+            <ul class="clean">
+              <li>毎回ゼロから頼まない</li>
+              <li>前回の結果・反省を次に渡す</li>
+              <li>「1回うまくいった」より「次も再現できる」</li>
+            </ul>
+            <p class="lead" style="margin-top:8px;">今回は完全自動化まで行かない。<br>今日の練習は Human in the Loop の最小形。</p>
+            <div class="flow">
+              <span class="step">依頼</span><span class="arrow">→</span>
+              <span class="step">出力</span><span class="arrow">→</span>
+              <span class="step">評価</span><span class="arrow">→</span>
+              <span class="step">次に反映</span>
+            </div>
+          </div>
+          <div class="figure" style="background:transparent;border:none;">
+            <img class="mascot lg" src="images/voice-samurai-07-laptop.png" alt="PCに向かうHAGAKURE君">
+          </div>
+        </div>
+      </section>
+
+      <!-- 13 -->
+      <section class="slide" data-title="In / On">
+        <p class="eyebrow">HUMAN POSITION</p>
+        <h2>In the Loop と On the Loop</h2>
+        <div class="compare">
+          <div class="panel in">
+            <div class="label" style="color:var(--teal);font-size:12px;font-weight:700;margin-bottom:8px;">今日の練習</div>
+            <h3>Human in the Loop</h3>
+            <p>ループの中で毎回見る・直す</p>
+            <p style="margin-top:10px;">Chatに頼む → 見る → 直させる</p>
+            <p style="margin-top:10px;color:var(--muted);">考え方が身につく／安全</p>
+          </div>
+          <div class="panel on">
+            <div class="label" style="color:var(--teal);font-size:12px;font-weight:700;margin-bottom:8px;">目指す景色</div>
+            <h3>Human on the Loop</h3>
+            <p>ループの外で監督する</p>
+            <p style="margin-top:10px;">普段はAIが回り、おかしい時だけ介入</p>
+            <p style="margin-top:10px;color:var(--muted);">人がボトルネックになりにくい</p>
+          </div>
+        </div>
+        <div class="quote">監督席に座る前に、<br>選手として回し方を覚える。</div>
+      </section>
+
+      <!-- 14 -->
+      <section class="slide" data-title="べからず">
+        <p class="eyebrow">DON'TS</p>
+        <h2>べからず集（日常AI向け）</h2>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>べからず</th>
+              <th>なぜ？</th>
+              <th>次に考えること</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>神プロンプトを作る</td><td>指示だけ最適化している</td><td>Context</td></tr>
+            <tr><td>毎回すべて説明する</td><td>情報が毎回消える</td><td>Contextの再利用</td></tr>
+            <tr><td>「守って」とお願いするだけ</td><td>保証がない</td><td>Harness</td></tr>
+            <tr><td>毎回「次これ」と言う</td><td>人がボトルネック</td><td>Loop</td></tr>
+            <tr><td>全部AIに任せる</td><td>人しか持たない情報がある</td><td>まずは In the Loop</td></tr>
+          </tbody>
+        </table>
+        <div class="quote">最近の自分の使い方で、<br>いちばん当てはまる「べからず」はどれ？</div>
+      </section>
+
+      <!-- 15 -->
+      <section class="slide" data-title="ワーク">
+        <p class="eyebrow">WORK（個人）</p>
+        <h2>自分の仕事をループに分解する</h2>
+        <p class="lead" style="margin-bottom:14px;">紙・メモでOK。全体共有はしません（希望者のみ任意）。</p>
+        <div class="worksheet">
+          <div class="box"><span>① 目的</span></div>
+          <div class="box"><span>② 入力</span></div>
+          <div class="box"><span>③ 実行</span></div>
+          <div class="box"><span>④ 結果</span></div>
+          <div class="box"><span>⑤ 評価</span></div>
+          <div class="box"><span>⑥ 改善</span></div>
+          <div class="box"><span>⑦ 次の入力</span></div>
+          <div class="box"><span>AIを置く場所（1つ）</span></div>
+        </div>
+        <div class="pill-row" style="margin-top:14px;">
+          <span class="pill warn">評価がない？</span>
+          <span class="pill warn">記録が残らない？</span>
+          <span class="pill warn">改善が属人的？</span>
+          <span class="pill">AIはループの部品</span>
+        </div>
+      </section>
+
+      <!-- 16 -->
+      <section class="slide" data-title="デモ導入">
+        <p class="eyebrow">DEMO</p>
+        <h2>後半：思想を実装で見てみる</h2>
+        <div class="grid-2">
+          <div class="stack">
+            <ul class="clean">
+              <li>題材：Slack コミュニケーション品質改善ループ</li>
+              <li>処罰・監視ではなく「問題候補の発見と改善」</li>
+              <li>見るだけでOK／途中で止まってもOK</li>
+              <li>今日は人間確認を残す（In the Loop）</li>
+            </ul>
+            <div class="quote">完成より、<br>「なぜプロンプトだけでは足りないか」に気づくこと。</div>
+          </div>
+          <div class="figure" style="background:transparent;border:none;">
+            <img class="mascot lg" src="images/voice-samurai-03-point.png" alt="指差しHAGAKURE君">
+          </div>
+        </div>
+      </section>
+
+      <!-- 17 -->
+      <section class="slide" data-title="デモの流れ">
+        <p class="eyebrow">DEMO FLOW</p>
+        <h2>デモで踏む段階</h2>
+        <table class="table">
+          <thead>
+            <tr><th>段階</th><th>その場でやること</th><th>学べること</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Prompt</td><td>投稿を貼って判定</td><td>単発でも動く</td></tr>
+            <tr><td>Context</td><td>例外ルールを渡す</td><td>判断材料が要る</td></tr>
+            <tr><td>Harness</td><td>取得範囲・人間確認を決める</td><td>お願いではなく仕組み</td></tr>
+            <tr><td>Loop</td><td>取得→判定→要確認→レビュー</td><td>回し続ける設計</td></tr>
+          </tbody>
+        </table>
+        <div class="flow" style="margin-top:16px;">
+          <span class="step">取得</span><span class="arrow">→</span>
+          <span class="step">分類</span><span class="arrow">→</span>
+          <span class="step">要確認</span><span class="arrow">→</span>
+          <span class="step">人が確認</span><span class="arrow">→</span>
+          <span class="step">基準更新</span>
+        </div>
+        <p class="note">優先順位の前から進み、時間になったら途中でもまとめへ。</p>
+      </section>
+
+      <!-- 18 -->
+      <section class="slide" data-title="まとめ">
+        <p class="eyebrow">SUMMARY</p>
+        <h2>持ち帰る3点</h2>
+        <div class="cards three">
+          <div class="card">
+            <div class="label">1</div>
+            <strong>線ではなく円</strong>
+            <p>仕事は作って終わりではなく、回して良くする</p>
+          </div>
+          <div class="card">
+            <div class="label">2</div>
+            <strong>外側へ広げる</strong>
+            <p>Prompt → Context → Harness → Loop</p>
+          </div>
+          <div class="card">
+            <div class="label">3</div>
+            <strong>最小の練習</strong>
+            <p>依頼 → 評価 → 次に反映</p>
+          </div>
+        </div>
+        <div class="quote" style="margin-top:18px;">
+          目指すのは Human on the Loop。<br>
+          でも今日覚えるのは Human in the Loop。
+        </div>
+      </section>
+
+      <!-- 19 -->
+      <section class="slide title-slide" data-title="クロージング">
+        <div class="hero">
+          <div class="stack" style="justify-content:center;">
+            <p class="eyebrow">CLOSING</p>
+            <h1 style="font-size:clamp(26px,2.8vw,36px);">良いプロンプトを書く人になるのではなく、<br>良いループを設計する人になる</h1>
+            <div class="meta">
+              <span>HAGAKUREプログラミング塾</span>
+              <span>2026年8月勉強会</span>
+            </div>
+            <div class="pill-row" style="margin-top:18px;">
+              <span class="pill">ご質問・感想どうぞ</span>
+              <span class="pill">次回の種：In から On へ何を外すか</span>
+            </div>
+          </div>
+          <div class="figure" style="background:transparent;border:none;">
+            <img class="mascot lg" src="images/voice-samurai-02-wave.png" alt="手を振るHAGAKURE君">
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <div class="footer-bar">
+      <div>HAGAKUREプログラミング塾 ｜ 2026年8月勉強会</div>
+      <div class="dots" id="dots" aria-label="スライド一覧"></div>
+      <div class="pager" id="pager">1 / 19</div>
+    </div>
+  </div>
+
+  <div class="controls" aria-label="ページネーション">
+    <button type="button" id="prevBtn">← 前へ</button>
+    <button type="button" id="nextBtn">次へ →</button>
+    <span class="help">← → / Space / クリックでも移動</span>
+  </div>
+
+  <script>
+    (function () {
+      const slides = Array.from(document.querySelectorAll(".slide"));
+      const pager = document.getElementById("pager");
+      const dots = document.getElementById("dots");
+      const prevBtn = document.getElementById("prevBtn");
+      const nextBtn = document.getElementById("nextBtn");
+      const deck = document.getElementById("deck");
+      let index = 0;
+      let locking = false;
+
+      slides.forEach((_, i) => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.setAttribute("aria-label", (i + 1) + "ページ目");
+        b.addEventListener("click", () => go(i));
+        dots.appendChild(b);
+      });
+
+      const dotButtons = Array.from(dots.querySelectorAll("button"));
+
+      function render() {
+        slides.forEach((slide, i) => {
+          slide.classList.toggle("active", i === index);
+        });
+        dotButtons.forEach((d, i) => d.classList.toggle("active", i === index));
+        pager.textContent = (index + 1) + " / " + slides.length;
+        prevBtn.disabled = index === 0;
+        nextBtn.disabled = index === slides.length - 1;
+        document.title =
+          (slides[index].dataset.title || "Slide") +
+          "｜HAGAKURE 2026年8月勉強会";
+      }
+
+      function go(next) {
+        if (locking) return;
+        const target = Math.max(0, Math.min(slides.length - 1, next));
+        if (target === index) return;
+        locking = true;
+        index = target;
+        render();
+        setTimeout(() => { locking = false; }, 220);
+      }
+
+      function next() { go(index + 1); }
+      function prev() { go(index - 1); }
+
+      prevBtn.addEventListener("click", prev);
+      nextBtn.addEventListener("click", next);
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowRight" || e.key === "PageDown" || e.key === " ") {
+          e.preventDefault();
+          next();
+        } else if (e.key === "ArrowLeft" || e.key === "PageUp") {
+          e.preventDefault();
+          prev();
+        } else if (e.key === "Home") {
+          e.preventDefault();
+          go(0);
+        } else if (e.key === "End") {
+          e.preventDefault();
+          go(slides.length - 1);
+        }
+      });
+
+      deck.addEventListener("click", (e) => {
+        if (e.target.closest("button, a, .dots")) return;
+        const rect = deck.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        if (x > rect.width * 0.55) next();
+        else if (x < rect.width * 0.45) prev();
+      });
+
+      let touchX = null;
+      deck.addEventListener("touchstart", (e) => {
+        touchX = e.changedTouches[0].clientX;
+      }, { passive: true });
+      deck.addEventListener("touchend", (e) => {
+        if (touchX == null) return;
+        const dx = e.changedTouches[0].clientX - touchX;
+        if (Math.abs(dx) > 40) {
+          if (dx < 0) next();
+          else prev();
+        }
+        touchX = null;
+      }, { passive: true });
+
+      render();
+    })();
+  </script>
+</body>
+</html>
