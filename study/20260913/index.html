@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenAI API 最新機能体験：Web検索とCSV分析 - HAGAKUREプログラミング塾</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Zen+Maru+Gothic:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --sage: #6f8f68;
+            --sage-dark: #4d6a48;
+            --sage-soft: #e7efe4;
+            --blush: #d98a8a;
+            --blush-soft: #f8e6e4;
+            --ink: #2c2a28;
+            --muted: #5c6158;
+            --paper: #fffdf8;
+            --cream: #f4efe4;
+            --line: #d7d0c4;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: "Zen Kaku Gothic New", "Hiragino Sans", sans-serif;
+            background-color: #e8efe4;
+            color: var(--ink);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .slider-container {
+            width: min(1280px, 96vw);
+            height: 850px;
+            max-height: 850px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 18px;
+            box-shadow: 0 12px 28px rgba(44, 42, 40, 0.12);
+            background-color: var(--paper);
+            border: 3px solid #2c2a28;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 100%;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 92% 88%, rgba(111, 143, 104, 0.10), transparent 36%),
+                var(--paper);
+            transition: left 0.45s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 36px 48px 72px;
+            box-sizing: border-box;
+        }
+
+        .slide.active { left: 0; }
+        .slide.prev { left: -100%; }
+
+        .slide h1 {
+            font-family: "Zen Maru Gothic", sans-serif;
+            font-size: 2.7em;
+            color: var(--sage-dark);
+            margin: 0 0 16px;
+            line-height: 1.35;
+        }
+
+        .slide h2 {
+            font-family: "Zen Maru Gothic", sans-serif;
+            font-size: 2.2em;
+            color: var(--sage-dark);
+            margin: 0 0 18px;
+        }
+
+        .slide p {
+            font-size: 1.28em;
+            line-height: 1.75;
+            max-width: 90%;
+            color: var(--muted);
+            margin: 8px 0;
+        }
+
+        .slide a {
+            color: var(--sage-dark);
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .slide a:hover { text-decoration: underline; }
+
+        p.doc-link {
+            font-size: 0.95em;
+            color: var(--muted);
+            max-width: 88%;
+            margin-top: 8px;
+        }
+
+        p.doc-link a {
+            font-size: inherit;
+        }
+
+        #hero-slide {
+            background:
+                radial-gradient(circle at 18% 20%, rgba(217, 138, 138, 0.18), transparent 32%),
+                linear-gradient(160deg, #f7f3ea 0%, #e7efe4 55%, #f8e6e4 100%);
+        }
+
+        #hero-slide p.community-name {
+            display: inline-block;
+            font-size: 1.05em;
+            color: #fffdf8;
+            background-color: #2c2a28;
+            padding: 8px 16px;
+            border-radius: 999px;
+            margin-top: 8px;
+            max-width: none;
+        }
+
+        .goal {
+            font-size: 1.55em !important;
+            color: var(--blush) !important;
+            font-weight: 700;
+            margin-top: 18px !important;
+        }
+
+        .chapter-title {
+            font-size: 1.85em !important;
+            color: var(--blush) !important;
+            font-weight: 700;
+            margin-bottom: 8px !important;
+        }
+
+        .chapter-subtitle {
+            font-size: 1.2em;
+            color: var(--sage);
+            margin-bottom: 14px;
+        }
+
+        .content-list {
+            text-align: left;
+            font-size: 1.22em;
+            line-height: 1.7;
+            max-width: 88%;
+            margin: 0;
+            padding-left: 1.2em;
+            color: var(--ink);
+        }
+
+        .content-list li { margin-bottom: 10px; }
+
+        .code-block {
+            background-color: #f7f4ee;
+            border: 2px solid var(--line);
+            border-radius: 10px;
+            padding: 14px 18px;
+            font-family: "Courier New", ui-monospace, monospace;
+            font-size: 0.95em;
+            text-align: left;
+            max-width: 92%;
+            max-height: 430px;
+            margin: 10px 0 0;
+            overflow: auto;
+            white-space: pre;
+            line-height: 1.45;
+            color: var(--ink);
+        }
+
+        .warn {
+            background: var(--blush-soft);
+            border-left: 6px solid var(--blush);
+            border-radius: 0 12px 12px 0;
+            padding: 14px 18px;
+            max-width: 86%;
+            text-align: left;
+            color: var(--ink);
+            font-size: 1.12em;
+            line-height: 1.65;
+        }
+
+        .pill-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            margin-top: 14px;
+            max-width: 90%;
+        }
+
+        .pill {
+            background: var(--sage-soft);
+            color: var(--sage-dark);
+            border-radius: 999px;
+            padding: 6px 12px;
+            font-size: 0.95em;
+            font-weight: 700;
+        }
+
+        .pill.warn-pill {
+            background: var(--blush-soft);
+            color: #a85a5a;
+        }
+
+        .hero-layout {
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
+            gap: 12px;
+            align-items: center;
+            width: 100%;
+            max-width: 1100px;
+            text-align: left;
+        }
+
+        .hero-mascot {
+            width: min(320px, 100%);
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px 28px;
+            width: 90%;
+            text-align: left;
+        }
+
+        .card {
+            background: #fff;
+            border: 2px solid var(--line);
+            border-radius: 14px;
+            padding: 16px 18px;
+        }
+
+        .card strong {
+            display: block;
+            font-family: "Zen Maru Gothic", sans-serif;
+            color: var(--sage-dark);
+            font-size: 1.15em;
+            margin-bottom: 6px;
+        }
+
+        .card p {
+            font-size: 1em;
+            margin: 0;
+            max-width: none;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 22px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            z-index: 20;
+        }
+
+        .arrow {
+            background-color: var(--sage);
+            color: white;
+            border: 3px solid #2c2a28;
+            padding: 8px 18px;
+            font-size: 1.5em;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            line-height: 1;
+        }
+
+        .arrow:hover { background-color: var(--sage-dark); }
+        .arrow:disabled {
+            background-color: #c8c8c8;
+            border-color: #9a9a9a;
+            cursor: not-allowed;
+        }
+
+        #pager {
+            min-width: 78px;
+            text-align: center;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+            color: var(--sage-dark);
+            background: #fff;
+            border: 3px solid #2c2a28;
+            border-radius: 999px;
+            padding: 6px 12px;
+        }
+
+        .character-image {
+            position: absolute;
+            bottom: 16px;
+            right: 18px;
+            width: 132px;
+            height: auto;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .note {
+            font-size: 0.95em;
+            color: var(--muted);
+            margin-top: 12px;
+            max-width: 88%;
+        }
+    </style>
+    <meta name="robots" content="noindex">
+    <meta name="description" content="Google ColabでResponses APIのWeb検索とCode Interpreterを体験する勉強会スライド。">
+</head>
+<body>
+    <div class="slider-container" id="deck">
+        <!-- 1 -->
+        <section id="hero-slide" class="slide active">
+            <div class="hero-layout">
+                <div>
+                    <p class="community-name">HAGAKUREプログラミング塾　2026.09.13</p>
+                    <h1>OpenAI API 最新機能体験</h1>
+                    <p style="font-size:1.45em;color:var(--sage-dark);font-weight:700;max-width:none;">Web検索とCSV分析</p>
+                    <p style="max-width:none;">Google Colaboratoryで、Responses APIを手を動かして試します。</p>
+                </div>
+                <img class="hero-mascot" src="images/voice-samurai-02-wave.png" alt="手を振るHAGAKURE君">
+            </div>
+        </section>
+
+        <!-- 2 -->
+        <section class="slide">
+            <h2>環境確認</h2>
+            <p>画面共有は見えていますか？<br>音声ははっきりと聞こえていますか？<br>チャットはSlackの方でお願いします。</p>
+            <img class="character-image" src="images/voice-samurai-01-idle.png" alt="HAGAKURE君">
+        </section>
+
+        <!-- 3 -->
+        <section class="slide">
+            <h2>講座の概要</h2>
+            <ul class="content-list">
+                <li>通常のテキスト生成（Chat Completions の古い書き方）</li>
+                <li>API内蔵のWeb検索</li>
+                <li>CSVをAPIへアップロード</li>
+                <li>Code InterpreterがPythonで集計・グラフ作成</li>
+                <li>AIが生成したCSV・画像をColabへ保存</li>
+                <li>Images APIでイラストを生成してPNG保存</li>
+                <li>Responses APIの image_generation で生成し、続けて編集する</li>
+            </ul>
+            <p class="doc-link">各手順に、OpenAI公式ドキュメントへのリンクを付けています。</p>
+            <img class="character-image" src="images/voice-samurai-03-point.png" alt="指差しHAGAKURE君">
+        </section>
+
+        <!-- 5 -->
+        <section class="slide">
+            <h2>今日のゴール</h2>
+            <p>ChatGPTの画面ではなく、<br>APIとして「検索する・ファイルを渡す・コードを実行する・画像を作る」まで触る</p>
+            <p class="goal">文章を出すAIから、作業するAPIへ</p>
+            <img class="character-image" src="images/voice-samurai-07-laptop.png" alt="ノートPCを使うHAGAKURE君">
+        </section>
+
+        <!-- 6 -->
+        <section class="slide">
+            <h2 class="chapter-title">先に注意</h2>
+            <div class="warn">
+                APIはChatGPTの月額契約とは別の従量課金です。<br>
+                患者名、患者IDなどの個人情報は入力しないでください。<br>
+                このNotebookでは <code>store=False</code> を指定します。
+            </div>
+            <div class="pill-row">
+                <span class="pill warn-pill">従量課金</span>
+                <span class="pill warn-pill">個人情報NG</span>
+                <span class="pill">store=False</span>
+                <span class="pill">見るだけ参加OK</span>
+            </div>
+            <p class="doc-link">料金：<a href="https://platform.openai.com/settings/billing" target="_blank" rel="noopener">Billing</a> ／ <a href="https://developers.openai.com/api/docs/pricing" target="_blank" rel="noopener">Pricing</a></p>
+            <img class="character-image" src="images/voice-samurai-04-surprised.png" alt="驚くHAGAKURE君">
+        </section>
+
+        <!-- 7 -->
+        <section class="slide">
+            <h2 class="chapter-title">0. 事前準備</h2>
+            <p class="chapter-subtitle">ColabのシークレットにAPIキーを置く</p>
+            <ul class="content-list">
+                <li>OpenAI Platformで<a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener">APIキー</a>を発行する</li>
+                <li>Colab左側の鍵アイコン「シークレット」を開く</li>
+                <li>名前を <code>OPENAI_API_KEY</code> として登録する</li>
+                <li>「ノートブックからのアクセス」をONにする</li>
+                <li>APIキーをコードへ直接貼り付けない</li>
+            </ul>
+            <img class="character-image" src="images/voice-samurai-05-thinking.png" alt="考えるHAGAKURE君">
+        </section>
+
+        <!-- 8 -->
+        <section class="slide">
+            <h2 class="chapter-title">セットアップ</h2>
+            <p class="chapter-subtitle">ライブラリとクライアント</p>
+            <pre class="code-block"># pandasとmatplotlibはColab標準版を使う
+!pip install -q --upgrade openai
+
+from google.colab import userdata
+from openai import OpenAI
+
+api_key = userdata.get("OPENAI_API_KEY")
+client = OpenAI(api_key=api_key)
+MODEL = "gpt-5.6-terra"
+print("準備完了：", MODEL)</pre>
+            <p class="note">使えない場合は、自分のプロジェクトで利用可能なモデル名に変更してください。</p>
+            <p class="doc-link">公式：<a href="https://developers.openai.com/api/docs/quickstart" target="_blank" rel="noopener">Developer quickstart</a></p>
+            <img class="character-image" src="images/voice-samurai-07-laptop.png" alt="ノートPCを使うHAGAKURE君">
+        </section>
+
+        <!-- 9 -->
+        <section class="slide">
+            <h2>今日の流れ</h2>
+            <div class="two-col">
+                <div class="card"><strong>1. 普通の回答</strong><p>Chat Completions。文章を返すだけ。</p></div>
+                <div class="card"><strong>2. Web検索以降</strong><p>Responses API。tools を渡す。</p></div>
+                <div class="card"><strong>3〜7. CSV分析</strong><p>作る → 上げる → 実行 → 保存。</p></div>
+                <div class="card"><strong>8. 画像生成</strong><p>Images API、または Responses で続き編集。</p></div>
+            </div>
+            <img class="character-image" src="images/voice-samurai-03-point.png" alt="指差しHAGAKURE君">
+        </section>
+
+        <section class="slide">
+            <h2>公式ドキュメント</h2>
+            <p class="chapter-subtitle">資料を見ながら、原点のページも開いてください</p>
+            <ul class="content-list">
+                <li><a href="https://developers.openai.com/api/docs/quickstart" target="_blank" rel="noopener">Quickstart</a> … 最初のAPI呼び出し</li>
+                <li><a href="https://platform.openai.com/docs/api-reference/chat/create" target="_blank" rel="noopener">Chat Completions</a> … 文章を返すだけの古い書き方</li>
+                <li><a href="https://developers.openai.com/api/docs/guides/text" target="_blank" rel="noopener">Text generation</a> … Responses APIの基本</li>
+                <li><a href="https://developers.openai.com/api/docs/guides/tools-web-search" target="_blank" rel="noopener">Web search</a> … 内蔵検索</li>
+                <li><a href="https://developers.openai.com/api/docs/guides/file-inputs" target="_blank" rel="noopener">File inputs</a> … ファイルアップロード</li>
+                <li><a href="https://developers.openai.com/api/docs/guides/tools-code-interpreter" target="_blank" rel="noopener">Code Interpreter</a> … Python実行と成果物</li>
+                <li><a href="https://developers.openai.com/api/docs/guides/image-generation" target="_blank" rel="noopener">Image generation</a> … Images API</li>
+                <li><a href="https://developers.openai.com/api/docs/guides/tools-image-generation" target="_blank" rel="noopener">Image generation tool</a> … Responsesでの画像生成</li>
+                <li><a href="https://developers.openai.com/api/docs/guides/conversation-state" target="_blank" rel="noopener">Conversation state</a> … previous_response_id</li>
+            </ul>
+            <img class="character-image" src="images/voice-samurai-05-thinking.png" alt="考えるHAGAKURE君">
+        </section>
+
+        <!-- 10 -->
+        <section class="slide">
+            <h2 class="chapter-title">1. 普通のAI回答</h2>
+            <p class="chapter-subtitle">まずは今も使える Chat Completions。文章を返すだけ</p>
+            <pre class="code-block">response = client.chat.completions.create(
+    model=MODEL,
+    messages=[{
+        "role": "user",
+        "content": "医療機関が生成AIを利用するときの注意点を3つ、簡潔に説明してください。",
+    }],
+)
+print(response.choices[0].message.content)</pre>
+            <p class="note">次のWeb検索からは、Responses API（client.responses.create）に切り替えます。</p>
+            <p class="doc-link">公式：<a href="https://platform.openai.com/docs/api-reference/chat/create" target="_blank" rel="noopener">Chat Completions</a></p>
+            <img class="character-image" src="images/voice-samurai-01-idle.png" alt="HAGAKURE君">
+        </section>
+
+        <!-- 11 -->
+        <section class="slide">
+            <h2 class="chapter-title">2. API内蔵のWeb検索</h2>
+            <p class="chapter-subtitle">ここから Responses API。tools に web_search を渡す</p>
+            <pre class="code-block">web_response = client.responses.create(
+    model=MODEL,
+    tools=[{
+        "type": "web_search",
+        "filters": {
+            "allowed_domains": ["mhlw.go.jp", "digital.go.jp"]
+        },
+    }],
+    tool_choice="required",
+    include=["web_search_call.action.sources"],
+    input="厚労省とデジタル庁の公開情報から、医療DXの最近の動向を3つ。",
+    store=False,
+)
+print(web_response.output_text)</pre>
+            <p class="doc-link">公式：<a href="https://developers.openai.com/api/docs/guides/tools-web-search" target="_blank" rel="noopener">Web search</a></p>
+            <img class="character-image" src="images/voice-samurai-05-thinking.png" alt="考えるHAGAKURE君">
+        </section>
+
+        <!-- 12 -->
+        <section class="slide">
+            <h2 class="chapter-title">検索処理の中身</h2>
+            <p class="chapter-subtitle">画面の文章以外に、検索語や参照元がある</p>
+            <pre class="code-block">for item in web_response.output:
+    if item.type == "web_search_call":
+        print(item.model_dump_json(indent=2))</pre>
+            <div class="pill-row">
+                <span class="pill">allowed_domains</span>
+                <span class="pill">tool_choice=required</span>
+                <span class="pill">sources を include</span>
+            </div>
+            <p class="doc-link">公式：<a href="https://developers.openai.com/api/docs/guides/tools-web-search" target="_blank" rel="noopener">Web search</a></p>
+            <img class="character-image" src="images/voice-samurai-03-point.png" alt="指差しHAGAKURE君">
+        </section>
+
+        <!-- 13 -->
+        <section class="slide">
+            <h2 class="chapter-title">3. 分析用のサンプルCSV</h2>
+            <p class="chapter-subtitle">実在する患者・病院のデータではありません。勉強会用の架空データです。</p>
+            <pre class="code-block">columns = ["月", "診療科", "患者数", "売上", "費用"]
+# 2026-01〜04 / 内科・整形外科・小児科
+df["利益"] = df["売上"] - df["費用"]
+df.to_csv("hospital_sales_sample.csv", index=False, encoding="utf-8-sig")</pre>
+            <div class="pill-row">
+                <span class="pill warn-pill">個人情報は入れない</span>
+                <span class="pill">架空データで十分</span>
+            </div>
+            <img class="character-image" src="images/voice-samurai-04-surprised.png" alt="驚くHAGAKURE君">
+        </section>
+
+        <!-- 14 -->
+        <section class="slide">
+            <h2 class="chapter-title">4. 使用するCSVを選ぶ</h2>
+            <p class="chapter-subtitle">初期はサンプルCSV。自分のCSVは USE_OWN_CSV = True</p>
+            <pre class="code-block">USE_OWN_CSV = False
+
+if USE_OWN_CSV:
+    uploaded = files.upload()
+    CSV_PATH = Path(next(iter(uploaded.keys())))
+else:
+    CSV_PATH = SAMPLE_CSV_PATH
+
+print("分析対象：", CSV_PATH)</pre>
+            <p class="note">個人情報・機密情報はアップロードしないでください。</p>
+            <img class="character-image" src="images/voice-samurai-05-thinking.png" alt="考えるHAGAKURE君">
+        </section>
+
+        <!-- 15 -->
+        <section class="slide">
+            <h2 class="chapter-title">5. CSVをAPIへアップロード</h2>
+            <p class="chapter-subtitle">モデル入力として使うので purpose="user_data"</p>
+            <pre class="code-block">with open(CSV_PATH, "rb") as f:
+    api_file = client.files.create(
+        file=f,
+        purpose="user_data",
+    )
+
+print("File ID:", api_file.id)</pre>
+            <p class="doc-link">公式：<a href="https://developers.openai.com/api/docs/guides/file-inputs" target="_blank" rel="noopener">File inputs</a>（purpose は user_data）</p>
+            <img class="character-image" src="images/voice-samurai-07-laptop.png" alt="ノートPCを使うHAGAKURE君">
+        </section>
+
+        <!-- 16 -->
+        <section class="slide">
+            <h2 class="chapter-title">6. Code Interpreterで分析</h2>
+            <p class="chapter-subtitle">隔離環境でPythonを実行し、集計CSVとグラフPNGを作らせる</p>
+            <pre class="code-block">analysis_response = client.responses.create(
+    model=MODEL,
+    tools=[{
+        "type": "code_interpreter",
+        "container": {"type": "auto", "file_ids": [api_file.id]},
+    }],
+    tool_choice="required",
+    input=analysis_prompt,
+    store=False,
+)
+print(analysis_response.output_text)</pre>
+            <p class="doc-link">公式：<a href="https://developers.openai.com/api/docs/guides/tools-code-interpreter" target="_blank" rel="noopener">Code Interpreter</a></p>
+            <img class="character-image" src="images/voice-samurai-07-laptop.png" alt="ノートPCを使うHAGAKURE君">
+        </section>
+
+        <!-- 17 -->
+        <section class="slide">
+            <h2 class="chapter-title">プロンプトのコツ</h2>
+            <ul class="content-list">
+                <li>「Pythonコードを書いて」ではなく「python toolで実際に実行して」</li>
+                <li>列名・行数・欠損・データ型を先に確認させる</li>
+                <li>事実と、推測・仮説を分けて書かせる</li>
+                <li>成果物の保存先まで指定する（CSVとPNG）</li>
+            </ul>
+            <p class="goal" style="font-size:1.3em !important;">書かせるより、実行させる</p>
+            <img class="character-image" src="images/voice-samurai-03-point.png" alt="指差しHAGAKURE君">
+        </section>
+
+        <!-- 18 -->
+        <section class="slide">
+            <h2 class="chapter-title">7. 生成ファイルをColabへ保存</h2>
+            <p class="chapter-subtitle">コンテナは最終使用から20分で期限切れ。すぐ取得する</p>
+            <pre class="code-block">container_files = list(client.containers.files.list(container_id=container_id))
+
+for container_file in container_files:
+    filename = Path(container_file.path or container_file.id).name
+    if filename == CSV_PATH.name:
+        continue  # 入力CSVは除外
+    content.write_to_file(OUTPUT_DIR / filename)</pre>
+            <p class="doc-link">公式：<a href="https://developers.openai.com/api/docs/guides/tools-code-interpreter" target="_blank" rel="noopener">Code Interpreter</a>（生成ファイルの取得）</p>
+            <img class="character-image" src="images/voice-samurai-06-sleepy.png" alt="眠そうなHAGAKURE君">
+        </section>
+
+        <section class="slide">
+            <h2 class="chapter-title">8. Images APIで画像生成</h2>
+            <p class="chapter-subtitle">品質重視は sunburst、速度重視は flare</p>
+            <pre class="code-block">IMAGE_MODEL = "gpt-image-2.5-sunburst"
+# IMAGE_MODEL = "gpt-image-2.5-flare"
+
+prompt = """
+明るく清潔感のある日本の地域病院で、
+医療従事者とAIロボットが協力してデータ分析をしている様子。
+
+現代的なフラットイラスト。
+青と白を基調とした配色。
+勉強会のスライドに使える構図。
+画像内に文字は入れない。
+"""</pre>
+            <div class="pill-row">
+                <span class="pill">1024x1024</span>
+                <span class="pill">quality=high</span>
+                <span class="pill warn-pill">画像生成も従量課金</span>
+            </div>
+            <p class="doc-link">公式：<a href="https://developers.openai.com/api/docs/guides/image-generation" target="_blank" rel="noopener">Image generation</a></p>
+            <img class="character-image" src="images/voice-samurai-05-thinking.png" alt="考えるHAGAKURE君">
+        </section>
+
+        <section class="slide">
+            <h2 class="chapter-title">8. 生成してPNG保存</h2>
+            <p class="chapter-subtitle">Base64をデコードして Colab に書き出す</p>
+            <pre class="code-block">import base64
+from pathlib import Path
+from IPython.display import display, Image
+
+result = client.images.generate(
+    model=IMAGE_MODEL,
+    prompt=prompt,
+    size="1024x1024",
+    quality="high",
+)
+
+image_base64 = result.data[0].b64_json
+image_bytes = base64.b64decode(image_base64)
+IMAGE_PATH = Path("generated_image.png")
+IMAGE_PATH.write_bytes(image_bytes)
+display(Image(filename=str(IMAGE_PATH)))
+print("保存しました：", IMAGE_PATH)</pre>
+            <p class="doc-link">公式：<a href="https://developers.openai.com/api/docs/guides/image-generation" target="_blank" rel="noopener">Image generation</a></p>
+            <img class="character-image" src="images/voice-samurai-07-laptop.png" alt="ノートPCを使うHAGAKURE君">
+        </section>
+
+        <section class="slide">
+            <h2 class="chapter-title">9. Responses APIで画像生成</h2>
+            <p class="chapter-subtitle">tools に image_generation。続き編集のため store=True</p>
+            <pre class="code-block" style="font-size:0.82em;max-height:470px;">import base64
+from IPython.display import display, Image
+
+response1 = client.responses.create(
+    model="gpt-5.6-luna",
+    input="""
+    日本の地域病院で、医療従事者とAIロボットが
+    データ分析している明るいイラストを作ってください。
+    画像内に文字は入れないでください。
+    """,
+    tools=[{
+        "type": "image_generation",
+        "model": "gpt-image-2.5-sunburst",
+        "quality": "high",
+    }],
+    store=True,
+)
+
+image_data1 = [
+    item.result
+    for item in response1.output
+    if item.type == "image_generation_call"
+][0]
+
+with open("image_v1.png", "wb") as f:
+    f.write(base64.b64decode(image_data1))
+display(Image(filename="image_v1.png"))</pre>
+            <p class="doc-link">公式：<a href="https://developers.openai.com/api/docs/guides/tools-image-generation" target="_blank" rel="noopener">Image generation tool</a></p>
+            <img class="character-image" src="images/voice-samurai-03-point.png" alt="指差しHAGAKURE君">
+        </section>
+
+        <section class="slide">
+            <h2 class="chapter-title">9. さっきの画像を変更する</h2>
+            <p class="chapter-subtitle">previous_response_id で構図と人物を引き継ぐ</p>
+            <pre class="code-block" style="font-size:0.82em;max-height:470px;">response2 = client.responses.create(
+    model="gpt-5.6-luna",
+    previous_response_id=response1.id,
+    input="""
+    さっきの画像の構図と人物を維持したまま、
+    AIロボットを小さくし、背景にグラフ画面を追加してください。
+    """,
+    tools=[{
+        "type": "image_generation",
+        "model": "gpt-image-2.5-sunburst",
+        "quality": "high",
+    }],
+    store=True,
+)
+
+image_data2 = [
+    item.result
+    for item in response2.output
+    if item.type == "image_generation_call"
+][0]
+
+with open("image_v2.png", "wb") as f:
+    f.write(base64.b64decode(image_data2))
+display(Image(filename="image_v2.png"))</pre>
+            <p class="doc-link">公式：<a href="https://developers.openai.com/api/docs/guides/conversation-state" target="_blank" rel="noopener">Conversation state</a>（previous_response_id）</p>
+            <img class="character-image" src="images/voice-samurai-04-surprised.png" alt="驚くHAGAKURE君">
+        </section>
+
+        <!-- 19 -->
+        <section class="slide">
+            <h2 class="chapter-title">10. 自由課題</h2>
+            <p class="chapter-subtitle">analysis_prompt を変えて試してみましょう</p>
+            <ul class="content-list">
+                <li>売上が最も伸びた診療科を特定する</li>
+                <li>患者1人当たり売上を計算する</li>
+                <li>前月比を計算して異常値を探す</li>
+                <li>経営会議向けに200文字で要約する</li>
+                <li>Excelファイルを作成するよう指示する</li>
+            </ul>
+            <img class="character-image" src="images/voice-samurai-05-thinking.png" alt="考えるHAGAKURE君">
+        </section>
+
+        <!-- 20 -->
+        <section class="slide">
+            <h2 class="chapter-title">11. 後片付け（任意）</h2>
+            <pre class="code-block">DELETE_UPLOADED_FILE = False
+
+if DELETE_UPLOADED_FILE:
+    client.files.delete(api_file.id)
+    print("API上の元CSVを削除しました。")</pre>
+            <p class="note">実行後は同じ File ID を再利用できません。</p>
+            <p class="doc-link">公式：<a href="https://developers.openai.com/api/docs/guides/file-inputs" target="_blank" rel="noopener">File inputs</a></p>
+            <img class="character-image" src="images/voice-samurai-01-idle.png" alt="HAGAKURE君">
+        </section>
+
+        <!-- 21 -->
+        <section class="slide">
+            <h2 class="chapter-title">まとめ</h2>
+            <ul class="content-list">
+                <li>最新情報を検索する</li>
+                <li>ファイルを受け取る</li>
+                <li>Pythonコードを自ら作成して実行する</li>
+                <li>集計表やグラフを成果物として返す</li>
+                <li>Images APIでイラストを生成して保存する</li>
+                <li>Responses APIで生成し、previous_response_id で続き編集する</li>
+            </ul>
+            <p class="goal">実業務では、個人情報・検証・利用上限・エラー処理を足す</p>
+            <img class="character-image" src="images/voice-samurai-03-point.png" alt="指差しHAGAKURE君">
+        </section>
+
+        <!-- 22 -->
+        <section class="slide">
+            <h2>お疲れ様でした</h2>
+            <p>うまくいかない所は画面共有で一緒に解決します。<br>感想や、自分ならこのCSVで何を見たいかはSlackへどうぞ。</p>
+            <p class="goal">HAGAKUREプログラミング塾</p>
+            <img class="character-image" src="images/voice-samurai-02-wave.png" alt="手を振るHAGAKURE君">
+        </section>
+    </div>
+
+    <div class="navigation" aria-label="ページネーション">
+        <button id="prev" class="arrow" type="button">&larr;</button>
+        <span id="pager">1 / 26</span>
+        <button id="next" class="arrow" type="button">&rarr;</button>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const slides = document.querySelectorAll(".slide");
+            const prevButton = document.getElementById("prev");
+            const nextButton = document.getElementById("next");
+            const pager = document.getElementById("pager");
+            let currentSlide = 0;
+
+            function showSlide(index) {
+                slides.forEach((slide, i) => {
+                    slide.classList.remove("active", "prev");
+                    if (i === index) slide.classList.add("active");
+                    else if (i < index) slide.classList.add("prev");
+                });
+                pager.textContent = (index + 1) + " / " + slides.length;
+                prevButton.disabled = index === 0;
+                nextButton.disabled = index === slides.length - 1;
+                document.title =
+                    "OpenAI API 最新機能体験（" + (index + 1) + "/" + slides.length +
+                    "）- HAGAKUREプログラミング塾";
+            }
+
+            function next() {
+                if (currentSlide < slides.length - 1) {
+                    currentSlide += 1;
+                    showSlide(currentSlide);
+                }
+            }
+
+            function prev() {
+                if (currentSlide > 0) {
+                    currentSlide -= 1;
+                    showSlide(currentSlide);
+                }
+            }
+
+            prevButton.addEventListener("click", prev);
+            nextButton.addEventListener("click", next);
+
+            document.addEventListener("keydown", (e) => {
+                if (e.key === "ArrowRight" || e.key === "PageDown" || e.key === " ") {
+                    e.preventDefault();
+                    next();
+                } else if (e.key === "ArrowLeft" || e.key === "PageUp") {
+                    e.preventDefault();
+                    prev();
+                } else if (e.key === "Home") {
+                    e.preventDefault();
+                    currentSlide = 0;
+                    showSlide(currentSlide);
+                } else if (e.key === "End") {
+                    e.preventDefault();
+                    currentSlide = slides.length - 1;
+                    showSlide(currentSlide);
+                }
+            });
+
+            const deck = document.getElementById("deck");
+            deck.addEventListener("click", (e) => {
+                if (e.target.closest("a, button")) return;
+                const rect = deck.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                if (x > rect.width * 0.55) next();
+                else if (x < rect.width * 0.45) prev();
+            });
+
+            showSlide(currentSlide);
+        });
+    </script>
+</body>
+</html>
